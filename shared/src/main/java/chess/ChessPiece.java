@@ -59,6 +59,9 @@ public class ChessPiece {
                 col--;
                 ChessPosition endPosition = new ChessPosition(row, col);
                 ChessMove bishop = new ChessMove(myPosition, endPosition, PieceType.BISHOP);
+                if((board.getPiece(endPosition) != null) && board.getPiece(endPosition).getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
+                    break;
+                }
                 bishopMoves.add(bishop);
                 if(board.getPiece(endPosition) != null ) {
                     break;
@@ -74,6 +77,9 @@ public class ChessPiece {
                 col++;
                 ChessPosition endPosition = new ChessPosition(row, col);
                 ChessMove bishop = new ChessMove(myPosition, endPosition, PieceType.BISHOP);
+                if((board.getPiece(endPosition) != null) && board.getPiece(endPosition).getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
+                    break;
+                }
                 bishopMoves.add(bishop);
                 if(board.getPiece(endPosition) != null ) {
                     break;
@@ -89,6 +95,9 @@ public class ChessPiece {
                 col--;
                 ChessPosition endPosition = new ChessPosition(row, col);
                 ChessMove bishop = new ChessMove(myPosition, endPosition, PieceType.BISHOP);
+                if((board.getPiece(endPosition) != null) && board.getPiece(endPosition).getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
+                    break;
+                }
                 bishopMoves.add(bishop);
                 if(board.getPiece(endPosition) != null ) {
                     break;
@@ -104,6 +113,9 @@ public class ChessPiece {
                 col++;
                 ChessPosition endPosition = new ChessPosition(row, col);
                 ChessMove bishop = new ChessMove(myPosition, endPosition, PieceType.BISHOP);
+                if((board.getPiece(endPosition) != null) && board.getPiece(endPosition).getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
+                    break;
+                }
                 bishopMoves.add(bishop);
                 if(board.getPiece(endPosition) != null ) {
                     break;
