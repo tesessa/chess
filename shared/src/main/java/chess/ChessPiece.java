@@ -11,8 +11,11 @@ import java.util.HashSet;
  * signature of the existing methods.
  */
 public class ChessPiece {
-
+    ChessGame.TeamColor pieceColor;
+    ChessPiece.PieceType type;
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        this.pieceColor = pieceColor;
+        this.type = type;
     }
 
     /**
@@ -30,16 +33,12 @@ public class ChessPiece {
     /**
      * @return Which team this chess piece belongs to
      */
-    public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
-    }
+    public ChessGame.TeamColor getTeamColor() { return pieceColor; }
 
     /**
      * @return which type of chess piece this piece is
      */
-    public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
-    }
+    public PieceType getPieceType() { return type; }
 
     /**
      * Calculates all the positions a chess piece can move to
@@ -50,47 +49,65 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         HashSet<ChessMove> bishopMoves = new HashSet<ChessMove>();
-       //ChessPosition endPosition = new ChessPosition(0,0);
-        //ChessMove bishop; //= new ChessMove(myPosition, end);
-       // bishopMoves.add(bishop);
-
 
         int row =  myPosition.getRow();
         int col = myPosition.getColumn();
-        int rowul = row;
-        int colul = col;
-        int rowur = row;
-        int colur = col;
-        int rowdr = row;
-        int coldr = col;
-        int rowdl = row;
-        int coldl = col;
-
-        for(int i = 0; i<8; i++) {
-            if(rowul > 1 && colul > 1) { /*this is to go up one row and left one column*/
-                rowul --;
-                colul --;
-                ChessPosition endPosition = new ChessPosition(rowul, colul);
+        //go up one row and left one column
+        for(int i = 0; i < 7; i++) {
+            if(row > 1 && col > 1) {
+                row--;
+                col--;
+                ChessPosition endPosition = new ChessPosition(row, col);
                 ChessMove bishop = new ChessMove(myPosition, endPosition, PieceType.BISHOP);
                 bishopMoves.add(bishop);
-            } if(rowur > 1 && colur < 8) { /*this is to go up one row and right one column*/
-                rowur--;
-                colur++;
-                ChessPosition endPosition =  new ChessPosition(rowur, colur);
+                if(board.getPiece(endPosition) != null ) {
+                    break;
+                }
+            }
+        }
+        row = myPosition.getRow();
+        col = myPosition.getColumn();
+        //go up one row and right one column
+        for(int i = 0; i < 7; i++) {
+            if(row > 1 && col < 8) {
+                row--;
+                col++;
+                ChessPosition endPosition = new ChessPosition(row, col);
                 ChessMove bishop = new ChessMove(myPosition, endPosition, PieceType.BISHOP);
                 bishopMoves.add(bishop);
-            } if(rowdr < 8 && coldr < 8) {
-                rowdr++;
-                coldr++;
-                ChessPosition endPosition = new ChessPosition(rowdr, coldr);
+                if(board.getPiece(endPosition) != null ) {
+                    break;
+                }
+            }
+        }
+        row = myPosition.getRow();
+        col = myPosition.getColumn();
+        //go down one row and right one column
+        for(int i = 0; i < 7; i++) {
+            if(row < 8 && col > 1)  {
+                row++;
+                col--;
+                ChessPosition endPosition = new ChessPosition(row, col);
                 ChessMove bishop = new ChessMove(myPosition, endPosition, PieceType.BISHOP);
                 bishopMoves.add(bishop);
-            } if(rowdl < 8 && coldl > 1) {
-                rowdl++;
-                coldl--;
-                ChessPosition endPosition = new ChessPosition(rowdl, coldl);
+                if(board.getPiece(endPosition) != null ) {
+                    break;
+                }
+            }
+        }
+        row = myPosition.getRow();
+        col = myPosition.getColumn();
+        //go down one row and left one column
+        for(int i = 0; i < 7; i++) {
+            if(col < 8 && row < 8) {
+                row++;
+                col++;
+                ChessPosition endPosition = new ChessPosition(row, col);
                 ChessMove bishop = new ChessMove(myPosition, endPosition, PieceType.BISHOP);
                 bishopMoves.add(bishop);
+                if(board.getPiece(endPosition) != null ) {
+                    break;
+                }
             }
         }
 
