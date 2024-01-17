@@ -13,3 +13,37 @@ but if(insertName.getPiece(row,col).getTeamColor() != pieceYoureTryingToMove.get
 //	you allow it to add value and then break, if it is equal to the piece you're trying to move you need to break the for loop
 
 }
+
+kingMoves!!!
+8 moves it can make
+//position right above king
+row++;
+col = col;
+
+//position right below king
+row--;
+col = col;
+
+//position left of king
+row = row
+col--;
+
+//position right of king
+row = row
+col++
+
+//up and left
+row++
+col--
+
+//up and right
+row++
+col++
+
+//down and left
+row--
+col--
+
+//down and right
+row--
+col++
