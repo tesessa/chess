@@ -11,10 +11,12 @@ import java.util.Objects;
 public class ChessMove {
     ChessPosition startPosition;
     ChessPosition endPosition;
+    ChessPiece.PieceType promotionPiece;
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
                      ChessPiece.PieceType promotionPiece) {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
+        this.promotionPiece = promotionPiece;
 
     }
 
@@ -39,12 +41,12 @@ public class ChessMove {
      * @return Type of piece to promote a pawn to, or null if no promotion
      */
     public ChessPiece.PieceType getPromotionPiece() {
-        throw new RuntimeException("Not implemented");
+        return promotionPiece;
     }
 
     public String toString()
     {
-        return String.valueOf(getEndPosition());
+        return "Start Position: " + startPosition + "End Position: " + endPosition;
     }
 
     @Override
@@ -52,12 +54,13 @@ public class ChessMove {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessMove chessMove = (ChessMove) o;
-        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition);
+       // System.out.println(Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition));
+        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && Objects.equals(getPromotionPiece(), chessMove.getPromotionPiece());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(startPosition, endPosition);
+        return Objects.hash(startPosition, endPosition, promotionPiece);
     }
 }
 

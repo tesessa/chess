@@ -328,8 +328,10 @@ public class ChessPiece {
         return moves;
     }
 
+
+    @Override
     public String toString() {
-        return String.valueOf(getPieceType());
+        return "piece color:  " + pieceColor + "\n" + "type: " + type + "\n";
     }
 
     @Override

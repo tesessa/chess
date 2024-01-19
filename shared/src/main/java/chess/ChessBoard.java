@@ -103,8 +103,15 @@ public class ChessBoard {
         }
     }
 
-    public String toString() {
+    /*public String toString() {
         return Arrays.deepToString(squares);
+    }*/
+
+    @Override
+    public String toString() {
+        return "ChessBoard{" +
+                "squares=" + Arrays.deepToString(squares)+
+                '}';
     }
 
     @Override
