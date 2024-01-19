@@ -168,24 +168,27 @@ public class ChessPiece {
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
         ChessPiece piece = board.getPiece(myPosition);
+        //check for opponents for white team
         ChessPosition opponent1 = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1);
         ChessPosition opponent2 = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-1);
+        //check for opponents for black team
         ChessPosition opponent3 = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()-1);
         ChessPosition opponent4 = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()+1);
         if(piece.getTeamColor().equals(ChessGame.TeamColor.WHITE)) {
             if(row == 2) {
-                if(board.getPiece(opponent1) != null && board.getPiece(opponent1).getTeamColor()!= board.getPiece(myPosition).getTeamColor()) {
-                    ChessMove move = new ChessMove(myPosition, opponent1, board.getPiece(myPosition).getPieceType());
-                    moves.add(move);
+                if(board.getPiece(opponent1)!=null) {
+                    endPosition(moves, row+1, col+1, myPosition, board);
                 }
-                if(board.getPiece(opponent2) != null && board.getPiece(opponent2).getTeamColor()!= board.getPiece(myPosition).getTeamColor()) {
-                    ChessMove move = new ChessMove(myPosition, opponent2, board.getPiece(myPosition).getPieceType());
-                    moves.add(move);
+                if(board.getPiece(opponent2)!=null) {
+                    endPosition(moves, row+1, col-1, myPosition, board);
                 }
                 row++;
                 endPosition(moves, row, col, myPosition, board);
-                row++;
-                endPosition(moves, row, col, myPosition, board);
+                ChessPosition check = new ChessPosition(row, col);
+                if(board.getPiece(check) == null) {
+                    row++;
+                    endPosition(moves, row, col, myPosition, board);
+                }
             } else {
                 if(board.getPiece(opponent1) != null && board.getPiece(opponent1).getTeamColor()!= board.getPiece(myPosition).getTeamColor()) {
                     ChessMove move = new ChessMove(myPosition, opponent1, board.getPiece(myPosition).getPieceType());
@@ -200,32 +203,32 @@ public class ChessPiece {
             }
         } else if(piece.getTeamColor().equals(ChessGame.TeamColor.BLACK)) {
             if(row == 7) {
-                if(board.getPiece(opponent3) != null && board.getPiece(opponent3).getTeamColor()!= board.getPiece(myPosition).getTeamColor()) {
-                    ChessMove move = new ChessMove(myPosition, opponent3, board.getPiece(myPosition).getPieceType());
-                    moves.add(move);
+                if(board.getPiece(opponent3) != null) {
+                    endPosition(moves, row-1, col-1, myPosition, board);
                 }
-                if(board.getPiece(opponent4) != null && board.getPiece(opponent4).getTeamColor()!= board.getPiece(myPosition).getTeamColor()) {
-                    ChessMove move = new ChessMove(myPosition, opponent4, board.getPiece(myPosition).getPieceType());
-                    moves.add(move);
+                if(board.getPiece(opponent4) != null) {
+                    endPosition(moves, row-1, col+1, myPosition, board);
                 }
                 row--;
                 endPosition(moves, row, col, myPosition, board);
-                row--;
-                endPosition(moves, row, col, myPosition, board);
+                ChessPosition check = new ChessPosition(row, col);
+                if(board.getPiece(check) == null) {
+                    row--;
+                    endPosition(moves, row, col, myPosition, board);
+                }
             } else {
-                if(board.getPiece(opponent3) != null && board.getPiece(opponent3).getTeamColor()!= board.getPiece(myPosition).getTeamColor()) {
-                    ChessMove move = new ChessMove(myPosition, opponent3, board.getPiece(myPosition).getPieceType());
-                    moves.add(move);
+                if(board.getPiece(opponent3) != null) {
+                    endPosition(moves, row-1, col-1, myPosition, board);
                 }
-                if(board.getPiece(opponent4) != null && board.getPiece(opponent4).getTeamColor()!= board.getPiece(myPosition).getTeamColor()) {
-                    ChessMove move = new ChessMove(myPosition, opponent4, board.getPiece(myPosition).getPieceType());
-                    moves.add(move);
+                if(board.getPiece(opponent4) != null) {
+                    endPosition(moves, row-1, col+1, myPosition, board);
                 }
                 row--;
                 endPosition(moves, row, col, myPosition, board);
             }
         }
     }
+
 
     /**
      * I am making this method to simplify the code of the pieceMoves method
@@ -237,7 +240,9 @@ public class ChessPiece {
         if(row <=8 && row > 0 && col <= 8 && col > 0) {
             ChessPosition endPosition = new ChessPosition(row, col);
             ChessMove piece = new ChessMove(startPosition, endPosition, board.getPiece(startPosition).getPieceType());
-            if ((board.getPiece(endPosition) != null) && board.getPiece(endPosition).getTeamColor() != board.getPiece(startPosition).getTeamColor()) {
+            if(board.getPiece(startPosition).getPieceType().equals(PieceType.PAWN) && startPosition.getColumn() == endPosition.getColumn() && board.getPiece(endPosition) != null) {
+                return moves;
+            } else if ((board.getPiece(endPosition) != null) && board.getPiece(endPosition).getTeamColor() != board.getPiece(startPosition).getTeamColor()) {
                 moves.add(piece);
             } else if (board.getPiece(endPosition) == null) {
                 //System.out.println("{" + endPosition.getRow() + "," + endPosition.getColumn() + "}");
