@@ -229,6 +229,63 @@ public class ChessPiece {
         }
     }
 
+    /**
+     * This method will give the moves a rook can make
+     * we will test it out and make sure it works
+     */
+    public void rookPiece(Collection<ChessMove> moves, ChessBoard board, ChessPosition myPosition) {
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+        for(int i = 0; i < 7; i++) {
+            if(row < 8) {
+                row++;
+                ChessPosition endPosition = endPosition(moves, row, col, myPosition, board);
+              //  if (board.getPiece(endPosition) != null && board.getPiece(endPosition).getTeamColor().equals(board.getPiece(myPosition).getTeamColor())) {
+               //     break;
+              //  }
+                if (board.getPiece(endPosition) != null) {
+                    break;
+                }
+            }
+        }
+        row = myPosition.getRow();
+        col = myPosition.getColumn();
+        for(int i = 0; i < 7; i++) {
+            if(row > 1) {
+                row--;
+                ChessPosition endPosition = endPosition(moves, row, col, myPosition, board);
+                //System.out.println("{" + endPosition.getRow() + "," + endPosition.getColumn() + "}");
+                if(board.getPiece(endPosition) != null) {
+                    break;
+                }
+            }
+        }
+        row = myPosition.getRow();
+        col = myPosition.getColumn();
+        for(int i = 0; i < 7; i++) {
+            if(col < 8) {
+                col++;
+                ChessPosition endPosition = endPosition(moves, row, col, myPosition, board);
+                if(board.getPiece(endPosition) != null) {
+                    break;
+                }
+            }
+        }
+        row = myPosition.getRow();
+        col = myPosition.getColumn();
+        for(int i = 0; i < 7; i++) {
+            if(col > 1) {
+                col--;
+                ChessPosition endPosition = endPosition(moves, row, col, myPosition, board);
+                //System.out.println("{" + endPosition.getRow() + "," + endPosition.getColumn() + "}");
+                if(board.getPiece(endPosition) != null) {
+                    break;
+                }
+            }
+        }
+
+    }
+
 
     /**
      * I am making this method to simplify the code of the pieceMoves method
@@ -236,21 +293,24 @@ public class ChessPiece {
      * it should take the row, col, start position, piecetype, and collection
      * and make a position object and add it to the collection
      */
-    public Collection<ChessMove> endPosition(Collection<ChessMove> moves, int row, int col, ChessPosition startPosition, ChessBoard board) {
+    public ChessPosition endPosition(Collection<ChessMove> moves, int row, int col, ChessPosition startPosition, ChessBoard board) {
+        ChessPosition endPosition = new ChessPosition(row, col);
         if(row <=8 && row > 0 && col <= 8 && col > 0) {
-            ChessPosition endPosition = new ChessPosition(row, col);
+            //ChessPosition endPosition = new ChessPosition(row, col);
             ChessMove piece = new ChessMove(startPosition, endPosition, board.getPiece(startPosition).getPieceType());
             if(board.getPiece(startPosition).getPieceType().equals(PieceType.PAWN) && startPosition.getColumn() == endPosition.getColumn() && board.getPiece(endPosition) != null) {
-                return moves;
+                return endPosition;
             } else if ((board.getPiece(endPosition) != null) && board.getPiece(endPosition).getTeamColor() != board.getPiece(startPosition).getTeamColor()) {
+               // System.out.println("Adding: {" + endPosition.getRow() + "," + endPosition.getColumn() + "}");
                 moves.add(piece);
             } else if (board.getPiece(endPosition) == null) {
-                //System.out.println("{" + endPosition.getRow() + "," + endPosition.getColumn() + "}");
+                //System.out.println("Adding: {" + endPosition.getRow() + "," + endPosition.getColumn() + "}");
                 moves.add(piece);
             }
         }
-        return moves;
+        return endPosition;
     }
+
 
 
 
@@ -281,6 +341,10 @@ public class ChessPiece {
 
        if(piece.getPieceType().equals(PieceType.PAWN)) {
            pawnPiece(moves, board, myPosition);
+       }
+
+       if(piece.getPieceType().equals(PieceType.ROOK)) {
+           rookPiece(moves, board, myPosition);
        }
         return moves;
     }
