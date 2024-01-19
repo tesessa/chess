@@ -162,6 +162,36 @@ public class ChessPiece {
     }
 
     /**
+     * this is the method for the pawn piece
+     */
+    public void pawnPiece(Collection<ChessMove> moves, ChessBoard board, ChessPosition myPosition) {
+        int row = myPosition.getRow();
+        int col = myPosition.getColumn();
+        ChessPiece piece = board.getPiece(myPosition);
+        if(piece.getTeamColor().equals(ChessGame.TeamColor.WHITE)) {
+            if(row == 2) {
+                row++;
+                endPosition(moves, row, col, myPosition, board);
+                row++;
+                endPosition(moves, row, col, myPosition, board);
+            } else {
+                row++;
+                endPosition(moves, row, col, myPosition, board);
+            }
+        } else if(piece.getTeamColor().equals(ChessGame.TeamColor.BLACK)) {
+            if(row == 7) {
+                row--;
+                endPosition(moves, row, col, myPosition, board);
+                row--;
+                endPosition(moves, row, col, myPosition, board);
+            } else {
+                row--;
+                endPosition(moves, row, col, myPosition, board);
+            }
+        }
+    }
+
+    /**
      * I am making this method to simplify the code of the pieceMoves method
      * we will test it out and make sure it works
      * it should take the row, col, start position, piecetype, and collection
@@ -179,7 +209,7 @@ public class ChessPiece {
             }
         }
         return moves;
-    } 
+    }
 
 
 
@@ -206,6 +236,10 @@ public class ChessPiece {
 
        if(piece.getPieceType().equals(PieceType.KNIGHT)) {
             knightPiece(moves, board, myPosition);
+       }
+
+       if(piece.getPieceType().equals(PieceType.PAWN)) {
+           pawnPiece(moves, board, myPosition);
        }
         return moves;
     }
