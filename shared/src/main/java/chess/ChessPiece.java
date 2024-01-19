@@ -47,12 +47,7 @@ public class ChessPiece {
             if (row > 1 && col > 1) {
                 row--;
                 col--;
-                ChessPosition endPosition = new ChessPosition(row, col);
-                ChessMove bishop = new ChessMove(myPosition, endPosition, PieceType.BISHOP);
-                if ((board.getPiece(endPosition) != null) && board.getPiece(endPosition).getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
-                    break;
-                }
-                moves.add(bishop);
+                ChessPosition endPosition = endPosition(moves, row, col, myPosition, board);
                 if (board.getPiece(endPosition) != null) {
                     break;
                 }
@@ -65,15 +60,8 @@ public class ChessPiece {
             if (row > 1 && col < 8) {
                 row--;
                 col++;
-                ChessPosition endPosition = new ChessPosition(row, col);
-                ChessMove bishop = new ChessMove(myPosition, endPosition, PieceType.BISHOP);
-                ChessPiece piece = board.getPiece(endPosition);
-                ChessPiece start = board.getPiece(myPosition);
-                if ((piece != null) && piece.getTeamColor() == start.getTeamColor()) {
-                    break;
-                }
-                moves.add(bishop);
-                if (board.getPiece(endPosition) != null) {
+                ChessPosition endPosition = endPosition(moves, row, col, myPosition, board);
+                if(board.getPiece(endPosition) != null) {
                     break;
                 }
             }
@@ -85,12 +73,7 @@ public class ChessPiece {
             if (row < 8 && col > 1) {
                 row++;
                 col--;
-                ChessPosition endPosition = new ChessPosition(row, col);
-                ChessMove bishop = new ChessMove(myPosition, endPosition, PieceType.BISHOP);
-                if ((board.getPiece(endPosition) != null) && board.getPiece(endPosition).getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
-                    break;
-                }
-                moves.add(bishop);
+                ChessPosition endPosition = endPosition(moves, row, col, myPosition, board);
                 if (board.getPiece(endPosition) != null) {
                     break;
                 }
@@ -103,12 +86,7 @@ public class ChessPiece {
             if (col < 8 && row < 8) {
                 row++;
                 col++;
-                ChessPosition endPosition = new ChessPosition(row, col);
-                ChessMove bishop = new ChessMove(myPosition, endPosition, PieceType.BISHOP);
-                if ((board.getPiece(endPosition) != null) && board.getPiece(endPosition).getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
-                    break;
-                }
-                moves.add(bishop);
+                ChessPosition endPosition = endPosition(moves, row, col, myPosition, board);
                 if (board.getPiece(endPosition) != null) {
                     break;
                 }
@@ -236,25 +214,23 @@ public class ChessPiece {
     public void rookPiece(Collection<ChessMove> moves, ChessBoard board, ChessPosition myPosition) {
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
+        //go up a row
         for(int i = 0; i < 7; i++) {
             if(row < 8) {
                 row++;
                 ChessPosition endPosition = endPosition(moves, row, col, myPosition, board);
-              //  if (board.getPiece(endPosition) != null && board.getPiece(endPosition).getTeamColor().equals(board.getPiece(myPosition).getTeamColor())) {
-               //     break;
-              //  }
                 if (board.getPiece(endPosition) != null) {
                     break;
                 }
             }
         }
+        //go down a row
         row = myPosition.getRow();
         col = myPosition.getColumn();
         for(int i = 0; i < 7; i++) {
             if(row > 1) {
                 row--;
                 ChessPosition endPosition = endPosition(moves, row, col, myPosition, board);
-                //System.out.println("{" + endPosition.getRow() + "," + endPosition.getColumn() + "}");
                 if(board.getPiece(endPosition) != null) {
                     break;
                 }
@@ -262,6 +238,7 @@ public class ChessPiece {
         }
         row = myPosition.getRow();
         col = myPosition.getColumn();
+        //go right one column
         for(int i = 0; i < 7; i++) {
             if(col < 8) {
                 col++;
@@ -271,13 +248,13 @@ public class ChessPiece {
                 }
             }
         }
+        //go left one column
         row = myPosition.getRow();
         col = myPosition.getColumn();
         for(int i = 0; i < 7; i++) {
             if(col > 1) {
                 col--;
                 ChessPosition endPosition = endPosition(moves, row, col, myPosition, board);
-                //System.out.println("{" + endPosition.getRow() + "," + endPosition.getColumn() + "}");
                 if(board.getPiece(endPosition) != null) {
                     break;
                 }
@@ -323,9 +300,6 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         HashSet<ChessMove> moves = new HashSet<ChessMove>();
-        System.out.println(board.getPiece(myPosition));
-        int row =  myPosition.getRow();
-        int col = myPosition.getColumn();
         ChessPiece piece = board.getPiece(myPosition);
        if(piece.getPieceType().equals(PieceType.KING)) {
            kingPiece(moves, board, myPosition);
