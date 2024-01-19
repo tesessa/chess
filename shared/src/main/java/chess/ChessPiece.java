@@ -40,7 +40,7 @@ public class ChessPiece {
      */
     public PieceType getPieceType() { return type; }
 
-    public void bishopMoves(Collection<ChessMove> moves, ChessBoard board, ChessPosition myPosition) {
+    public void bishopPiece(Collection<ChessMove> moves, ChessBoard board, ChessPosition myPosition) {
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
         for (int i = 0; i < 7; i++) {
@@ -332,7 +332,7 @@ public class ChessPiece {
        }
 
        if(piece.getPieceType().equals(PieceType.BISHOP)) {
-            bishopMoves(moves, board, myPosition);
+            bishopPiece(moves, board, myPosition);
         }
 
        if(piece.getPieceType().equals(PieceType.KNIGHT)) {
@@ -344,6 +344,11 @@ public class ChessPiece {
        }
 
        if(piece.getPieceType().equals(PieceType.ROOK)) {
+           rookPiece(moves, board, myPosition);
+       }
+
+       if(piece.getPieceType().equals(PieceType.QUEEN)) {
+           bishopPiece(moves, board, myPosition);
            rookPiece(moves, board, myPosition);
        }
         return moves;
