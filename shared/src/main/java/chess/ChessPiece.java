@@ -168,13 +168,13 @@ public class ChessPiece {
                     row++;
                     endPosition(moves, row, col, myPosition, board);
                 }
-            } else {
+            }  else {
                 if(board.getPiece(opponent1) != null && board.getPiece(opponent1).getTeamColor()!= board.getPiece(myPosition).getTeamColor()) {
-                    ChessMove move = new ChessMove(myPosition, opponent1, board.getPiece(myPosition).getPieceType());
+                    ChessMove move = new ChessMove(myPosition, opponent1);
                     moves.add(move);
                 }
                 if(board.getPiece(opponent2) != null && board.getPiece(opponent2).getTeamColor()!= board.getPiece(myPosition).getTeamColor()) {
-                    ChessMove move = new ChessMove(myPosition, opponent2, board.getPiece(myPosition).getPieceType());
+                    ChessMove move = new ChessMove(myPosition, opponent2);
                     moves.add(move);
                 }
                 row++;
@@ -275,7 +275,19 @@ public class ChessPiece {
         ChessPosition endPosition = new ChessPosition(row, col);
         if(row <=8 && row > 0 && col <= 8 && col > 0) {
             //ChessPosition endPosition = new ChessPosition(row, col);
-            ChessMove piece = new ChessMove(startPosition, endPosition, board.getPiece(startPosition).getPieceType());
+            ChessMove piece;
+            if(board.getPiece(startPosition).getPieceType().equals(PieceType.PAWN) && (row == 8 || row == 1)) {
+                piece = new ChessMove(startPosition, endPosition, PieceType.BISHOP);
+                moves.add(piece);
+                piece = new ChessMove(startPosition, endPosition, PieceType.ROOK);
+                moves.add(piece);
+                piece = new ChessMove(startPosition, endPosition, PieceType.KNIGHT);
+                moves.add(piece);
+                piece = new ChessMove(startPosition, endPosition, PieceType.QUEEN);
+                moves.add(piece);
+            } else {
+                piece = new ChessMove(startPosition, endPosition);
+            }
             if(board.getPiece(startPosition).getPieceType().equals(PieceType.PAWN) && startPosition.getColumn() == endPosition.getColumn() && board.getPiece(endPosition) != null) {
                 return endPosition;
             } else if ((board.getPiece(endPosition) != null) && board.getPiece(endPosition).getTeamColor() != board.getPiece(startPosition).getTeamColor()) {
