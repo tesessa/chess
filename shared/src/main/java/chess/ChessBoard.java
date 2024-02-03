@@ -37,7 +37,6 @@ public class ChessBoard {
         int row = position.getRow();
         int col = position.getColumn();
         return squares[row-1][col-1];
-        //throw new RuntimeException("Not implemented");
     }
 
     /**
@@ -109,8 +108,7 @@ public class ChessBoard {
 
     @Override
     public String toString() {
-        return "ChessBoard{" +
-                "squares=" + Arrays.deepToString(squares)+
+        return "ChessBoard{" + Arrays.deepToString(squares) +
                 '}';
     }
 

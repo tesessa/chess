@@ -343,7 +343,7 @@ public class ChessPiece {
 
     @Override
     public String toString() {
-        return "piece color:  " + pieceColor + "\n" + "type: " + type + "\n";
+        return "piece color:  " + pieceColor  + "\n" + " type: " + type + "\n";
     }
 
     @Override

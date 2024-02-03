@@ -1,6 +1,9 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -10,8 +13,9 @@ import java.util.Collection;
  */
 public class ChessGame {
 
-
-    int teamTurn = 1;
+    private ChessBoard gameBoard = new ChessBoard();
+    private int whiteTeamTurn = 0;
+    private int blackTeamTurn = 0;
     public ChessGame() {
 
     }
@@ -20,10 +24,11 @@ public class ChessGame {
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        if(teamTurn % 2 == 1) {
-            return TeamColor.WHITE;
-        } else {
+        System.out.println("getTeamTurn");
+        if(whiteTeamTurn > blackTeamTurn) {
             return TeamColor.BLACK;
+        } else {
+            return TeamColor.WHITE;
         }
 
     }
@@ -34,7 +39,13 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        teamTurn++;
+        System.out.println("setTeamTurn");
+        if(team == TeamColor.WHITE) {
+            whiteTeamTurn++;
+        } else {
+            blackTeamTurn++;
+        }
+        System.out.println("White team turn: " + whiteTeamTurn + " Black team turn: " + blackTeamTurn);
     }
 
     /**
@@ -53,7 +64,13 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        System.out.println("validMoves");
+        if(getBoard().getPiece(startPosition) == null) {
+            return null;
+        }
+        ChessPiece piece = getBoard().getPiece(startPosition);
+        Collection<ChessMove> moves =  piece.pieceMoves(getBoard(), startPosition);
+        return moves;
     }
 
     /**
@@ -63,7 +80,33 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        System.out.println("makeMove");
+        System.out.println("Piece at start: " + getBoard().getPiece(move.getStartPosition()) + " Start Position: " +move.getStartPosition() +
+                " End position: " + move.getEndPosition());
+        Collection<ChessMove> validMovesList = validMoves(move.getStartPosition());
+        if(validMovesList == null) {
+            throw new InvalidMoveException();
+        }
+        int checkMove = 0;
+       // System.out.println("Size: " + validMovesList.size());
+        for(ChessMove check : validMovesList) {
+            //System.out.println(check);
+           // System.out.println(move.getEndPosition());
+            //System.out.println(check.getEndPosition());
+            if(check.getEndPosition().equals(move.getEndPosition())) {
+                checkMove = 1;
+                break;
+            }
+        }
+        System.out.println("Check Move");
+       if(checkMove == 0) {
+           throw new InvalidMoveException();
+        } else {
+            ChessBoard newBoard = gameBoard;
+            newBoard.addPiece(move.getEndPosition(), getBoard().getPiece(move.getStartPosition()));
+            newBoard.addPiece(move.getStartPosition(), null);
+            setBoard(newBoard);
+        }
     }
 
     /**
@@ -103,7 +146,13 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        System.out.println("setBoard");
+        /*if(whiteTeamTurn == 0 && blackTeamTurn == 0) {
+            gameBoard.resetBoard();
+        } else {
+            gameBoard = board;
+        }*/
+        gameBoard = board;
     }
 
     /**
@@ -112,7 +161,9 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+       System.out.println("getBoard");
+       //setBoard(gameBoard);
+       return gameBoard;
     }
 }
 
