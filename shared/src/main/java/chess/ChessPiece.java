@@ -155,10 +155,12 @@ public class ChessPiece {
         ChessPosition opponent4 = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()+1);
         if(piece.getTeamColor().equals(ChessGame.TeamColor.WHITE)) {
             if(row == 2) {
-                if(board.getPiece(opponent1)!=null) {
+                if(col < 8 && board.getPiece(opponent1)!=null &&
+                              board.getPiece(opponent1).getTeamColor() == ChessGame.TeamColor.BLACK) {
                     endPosition(moves, row+1, col+1, myPosition, board);
                 }
-                if(board.getPiece(opponent2)!=null) {
+                if(col > 1 && board.getPiece(opponent2)!=null &&
+                              board.getPiece(opponent2).getTeamColor() == ChessGame.TeamColor.BLACK) {
                     endPosition(moves, row+1, col-1, myPosition, board);
                 }
                 row++;
@@ -169,11 +171,13 @@ public class ChessPiece {
                     endPosition(moves, row, col, myPosition, board);
                 }
             }  else {
-                if(board.getPiece(opponent1) != null && board.getPiece(opponent1).getTeamColor()!= board.getPiece(myPosition).getTeamColor()) {
+                if(board.getPiece(opponent1) != null && board.getPiece(opponent1).getTeamColor() !=
+                        board.getPiece(myPosition).getTeamColor()) {
                     ChessMove move = new ChessMove(myPosition, opponent1);
                     moves.add(move);
                 }
-                if(board.getPiece(opponent2) != null && board.getPiece(opponent2).getTeamColor()!= board.getPiece(myPosition).getTeamColor()) {
+                if(board.getPiece(opponent2) != null && board.getPiece(opponent2).getTeamColor()!=
+                        board.getPiece(myPosition).getTeamColor()) {
                     ChessMove move = new ChessMove(myPosition, opponent2);
                     moves.add(move);
                 }
@@ -182,10 +186,12 @@ public class ChessPiece {
             }
         } else if(piece.getTeamColor().equals(ChessGame.TeamColor.BLACK)) {
             if(row == 7) {
-                if(board.getPiece(opponent3) != null) {
+                if(col > 1 && board.getPiece(opponent3) != null &&
+                              board.getPiece(opponent3).getTeamColor() == ChessGame.TeamColor.WHITE) {
                     endPosition(moves, row-1, col-1, myPosition, board);
                 }
-                if(board.getPiece(opponent4) != null) {
+                if(col < 8 && board.getPiece(opponent4) != null &&
+                              board.getPiece(opponent4).getTeamColor() == ChessGame.TeamColor.WHITE) {
                     endPosition(moves, row-1, col+1, myPosition, board);
                 }
                 row--;

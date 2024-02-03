@@ -68,8 +68,10 @@ public class ChessGame {
         if(getBoard().getPiece(startPosition) == null) {
             return null;
         }
+        System.out.println("Piece not null");
         ChessPiece piece = getBoard().getPiece(startPosition);
         Collection<ChessMove> moves =  piece.pieceMoves(getBoard(), startPosition);
+        System.out.println("Got past pieceMoves");
         return moves;
     }
 
@@ -84,6 +86,7 @@ public class ChessGame {
         System.out.println("Piece at start: " + getBoard().getPiece(move.getStartPosition()) + " Start Position: " +move.getStartPosition() +
                 " End position: " + move.getEndPosition());
         Collection<ChessMove> validMovesList = validMoves(move.getStartPosition());
+        System.out.println("Got past validMoves");
         if(validMovesList == null) {
             throw new InvalidMoveException();
         }
