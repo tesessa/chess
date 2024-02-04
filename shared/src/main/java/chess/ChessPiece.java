@@ -171,12 +171,12 @@ public class ChessPiece {
                     endPosition(moves, row, col, myPosition, board);
                 }
             }  else {
-                if(board.getPiece(opponent1) != null && board.getPiece(opponent1).getTeamColor() !=
+                if(col < 8 && board.getPiece(opponent1) != null && board.getPiece(opponent1).getTeamColor() !=
                         board.getPiece(myPosition).getTeamColor()) {
                     ChessMove move = new ChessMove(myPosition, opponent1);
                     moves.add(move);
                 }
-                if(board.getPiece(opponent2) != null && board.getPiece(opponent2).getTeamColor()!=
+                if(col > 1 && board.getPiece(opponent2) != null && board.getPiece(opponent2).getTeamColor()!=
                         board.getPiece(myPosition).getTeamColor()) {
                     ChessMove move = new ChessMove(myPosition, opponent2);
                     moves.add(move);
