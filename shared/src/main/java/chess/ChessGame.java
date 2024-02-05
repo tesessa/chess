@@ -158,21 +158,23 @@ public class ChessGame {
         HashSet<ChessMove> killEnemy = new HashSet<ChessMove>();
         Collection<ChessMove> enemyPositions = enemyPositions(team, kingPosition);
         ChessBoard board  = getBoard();
+        if(enemyPositions.size() == 1)  {
         for(int i = 1; i < 9; i++) {
-            for(int j = 1; j < 9; j++) {
+            for (int j = 1; j < 9; j++) {
                 ChessPosition boardPosition = new ChessPosition(i, j);
                 ChessPiece pieceInLoop = board.getPiece(boardPosition);
-                if(pieceInLoop != null && pieceInLoop.getTeamColor().equals(team)) {
+                if (pieceInLoop != null && pieceInLoop.getTeamColor().equals(team)) {
                     Collection<ChessMove> moves = pieceInLoop.pieceMoves(board, boardPosition);
-                    for(ChessMove check : moves) {
-                        for(ChessMove enemy : enemyPositions) {
-                            if(check.getEndPosition().equals(enemy.getStartPosition())) {
+                    for (ChessMove check : moves) {
+                        for (ChessMove enemy : enemyPositions) {
+                            if (check.getEndPosition().equals(enemy.getStartPosition())) {
                                 killEnemy.add(check);
                             }
                         }
                     }
                 }
             }
+          }
         }
         return killEnemy;
     }
@@ -224,47 +226,47 @@ public class ChessGame {
      */
     public boolean kingIsUnsafe(TeamColor team, ChessPosition kingPosition) {
         int inCheck = 0;
-        TeamColor opposingTeam;
         ChessBoard board = getBoard();
-        if(team == TeamColor.WHITE) {
-            opposingTeam = TeamColor.BLACK;
-        } else {
-            opposingTeam = TeamColor.WHITE;
-        }
+       // System.out.println("Piece at kingPosition: " + board.getPiece(kingPosition));
+       //System.out.println("KingPosition: " + kingPosition);
+        //ChessPiece king = new ChessPiece(team, ChessPiece.PieceType.KING);
+        //Collection<ChessMove> kingMoves;
+       // kingMoves = king.pieceMoves(board, kingPosition);
+
        // Collection<ChessMove> killKing = null;
         for(int i = 1; i < 9; i++) {
             for(int j = 1; j < 9; j++) {
                 ChessPosition boardPosition = new ChessPosition(i, j);
                 ChessPiece pieceInLoop = board.getPiece(boardPosition);
-                if(pieceInLoop != null && pieceInLoop.getTeamColor().equals(opposingTeam)) {
-                   // System.out.println("Piece type: " + getBoard().getPiece(boardPosition).getPieceType() + " Piece Color: " + getBoard().getPiece(boardPosition).getTeamColor());
+                if(pieceInLoop != null && !pieceInLoop.getTeamColor().equals(team)) {
+                    if (pieceInLoop.getPieceType() == ChessPiece.PieceType.PAWN) {
+                        //System.out.println("Piece type: " + pieceInLoop + " Start Position " + boardPosition);
+                        // for (ChessMove checkKing : kingMoves) {
+                        int row = boardPosition.getRow();
+                        int col = boardPosition.getColumn();
+                        if (pieceInLoop.getTeamColor() == TeamColor.BLACK) {
+                            ChessPosition opponent1 = new ChessPosition(row - 1, col - 1);
+                            ChessPosition opponent2 = new ChessPosition(row - 1, col + 1);
+                            if (opponent1.equals(kingPosition) || opponent2.equals(kingPosition)) {
+                                inCheck = 1;
+                            }
+                        } else if (pieceInLoop.getTeamColor() == TeamColor.WHITE) {
+                            ChessPosition opponent1 = new ChessPosition(row + 1, col - 1);
+                            ChessPosition opponent2 = new ChessPosition(row + 1, col + 1);
+                         //   System.out.println("Pawn Start Position: " + boardPosition);
+                         //   System.out.println("Opponent 1: " + opponent1 + " King Position: " + kingPosition);
+                         //   System.out.println("Opponent 2: " + opponent2 + " King position: " + kingPosition);
+                         //   System.out.println();
+                            if (opponent1.equals(kingPosition) || opponent2.equals(kingPosition)) {
+                                inCheck = 1;
+                            }
+                            //  }
+                        }
+                    }
                    Collection<ChessMove> moves =  pieceInLoop.pieceMoves(board, boardPosition);
-                   System.out.println("Piece type: " + pieceInLoop.getPieceType() + " Piece Color: " + pieceInLoop.getTeamColor() + "\n" + moves);
+                   //System.out.println("Piece type: " + pieceInLoop.getPieceType() + " Piece Color: " + pieceInLoop.getTeamColor() + "\n" + moves);
                    for(ChessMove check : moves) {
-                       if (pieceInLoop.getPieceType() == ChessPiece.PieceType.PAWN) {
-                           int row = check.getStartPosition().getRow();
-                           int col = check.getStartPosition().getColumn();
-                           if (pieceInLoop.getTeamColor() == TeamColor.BLACK) {
-                               ChessPosition opponent1 = new ChessPosition(row - 1, col - 1);
-                               ChessPosition opponent2 = new ChessPosition(row - 1, col + 1);
-                               if(opponent1.equals(kingPosition) || opponent2.equals(kingPosition)) {
-                                   inCheck = 1;
-                               }
-                           } else if(pieceInLoop.getTeamColor() == TeamColor.WHITE) {
-                               ChessPosition opponent1 = new ChessPosition(row+1, col-1);
-                               ChessPosition opponent2 = new ChessPosition(row+1, col+1);
-                               if(opponent1.equals(kingPosition) || opponent2.equals(kingPosition)) {
-                                   inCheck = 1;
-                               }
-                           }
-                       }
                        if(check.getEndPosition().equals(kingPosition)) {
-                          // ChessMove opponent = new ChessMove(check.getStartPosition(), check.getEndPosition());
-                           //System.out.println("opponent: " + opponent);
-                          // System.out.println("first: " + killKing);
-                           //killKing.add(opponent);
-                           //System.out.println("Second: " + killKing);
-                           //validMoves(check.getStartPosition());
                            inCheck = 1;
                        }
                    }
@@ -275,6 +277,7 @@ public class ChessGame {
        //     System.out.println(getBoard().getPiece(moves.getStartPosition()).getPieceType() + " " + getBoard().getPiece(moves.getStartPosition()).getTeamColor() + " " + moves);
         //}
        // System.out.println("checkOpposingTeam " + inCheck);
+       // System.out.println();
         if(inCheck == 1) {
             return true;
         } else {
@@ -306,17 +309,26 @@ public class ChessGame {
         Collection <ChessMove> moves = getOutOfCheck(teamColor, kingPosition);
         Collection<ChessMove> temp;
         temp = kingPiece.pieceMoves(getBoard(), kingPosition);
+        System.out.println(moves);
         for(ChessMove check : temp) {
-            if(!kingIsUnsafe(teamColor, check.getEndPosition())) {
+            System.out.println(kingIsUnsafe(teamColor, check.getEndPosition()));
+            if(!kingIsUnsafe(teamColor, check.getEndPosition())) { //this is checking if the king is unsafe at each of it's end points
                 moves.add(check);
             }
         }
+        System.out.println(moves);
         if(moves.isEmpty()) {
             return true;
         } else {
             return false;
         }
     }
+
+    //king @ {8,3}, pawn {7,4} is supposed to capture it
+    //king @ {8,5}, pawn {7,4} is supposed to capture it
+    //king @ {7,4}, pawn {6,5} is supposed to capture it
+    //king @ {7,3}, pawn {6,2} is supposed to capture it
+    //king @ {7,5}, pawn {6,6} is supposed to capture it
 
     /**
      * Determines if the given team is in stalemate, which here is defined as having
