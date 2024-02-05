@@ -54,8 +54,8 @@ public class ChessMove {
 
     public String toString()
     {
-        return String.valueOf(endPosition);
-       // return "Start Position: " + startPosition + " End Position: " + endPosition + " Promotion Piece: " + promotionPiece + "\n";
+        //return String.valueOf(endPosition);
+       return "Start Position: " + startPosition + " End Position: " + endPosition + " Promotion Piece: " + promotionPiece + "\n";
     }
 
     @Override
