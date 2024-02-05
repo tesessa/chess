@@ -304,12 +304,13 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
+       // System.out.println(getBoard());
         ChessPiece kingPiece = new ChessPiece(teamColor, ChessPiece.PieceType.KING);
         ChessPosition kingPosition = findKingPosition(teamColor);
         Collection <ChessMove> moves = getOutOfCheck(teamColor, kingPosition);
         Collection<ChessMove> temp;
         temp = kingPiece.pieceMoves(getBoard(), kingPosition);
-        System.out.println(moves);
+        //System.out.println(moves);
         for(ChessMove check : temp) {
             System.out.println(kingIsUnsafe(teamColor, check.getEndPosition()));
             if(!kingIsUnsafe(teamColor, check.getEndPosition())) { //this is checking if the king is unsafe at each of it's end points
@@ -317,18 +318,17 @@ public class ChessGame {
             }
         }
         System.out.println(moves);
+
         if(moves.isEmpty()) {
-            return true;
+           if(temp.isEmpty()) {
+               return false;
+           } else {
+               return true;
+           }
         } else {
             return false;
         }
     }
-
-    //king @ {8,3}, pawn {7,4} is supposed to capture it
-    //king @ {8,5}, pawn {7,4} is supposed to capture it
-    //king @ {7,4}, pawn {6,5} is supposed to capture it
-    //king @ {7,3}, pawn {6,2} is supposed to capture it
-    //king @ {7,5}, pawn {6,6} is supposed to capture it
 
     /**
      * Determines if the given team is in stalemate, which here is defined as having
@@ -338,7 +338,31 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        boolean staleMate = false;
+        ChessBoard board = getBoard();
+        Collection<ChessMove> moves;
+        for(int i = 1; i < 9; i++) {
+            for(int j = 1; j < 9; j++) {
+                ChessPosition boardPosition = new ChessPosition(i,j);
+                if(board.getPiece(boardPosition) != null && board.getPiece(boardPosition).getTeamColor().equals(teamColor)) {
+                    ChessPiece piece = board.getPiece(boardPosition);
+                    moves = piece.pieceMoves(board, boardPosition);
+                    for(ChessMove check : moves) {
+                        if(kingIsUnsafe(teamColor, check.getEndPosition())) {
+                            //System.out.println(moves);
+                           // System.out.println(check.getEndPosition());
+                            staleMate = true;
+                        } else {
+                            staleMate = false;
+                        }
+                    }
+                    if(moves.isEmpty()) {
+                        staleMate = true;
+                    }
+                }
+            }
+        }
+        return staleMate;
     }
 
     /**
@@ -351,7 +375,6 @@ public class ChessGame {
        // whiteTeamTurn = 0;
         //blackTeamTurn = 0;
         gameBoard = board;
-        killKing = new ArrayList<ChessMove>();
     }
 
     /**
@@ -360,7 +383,7 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-      // System.out.println("getBoard");
+       //System.out.println("getBoard");
        //setBoard(gameBoard);
        return gameBoard;
     }
