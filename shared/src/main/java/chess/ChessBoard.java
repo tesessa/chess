@@ -15,6 +15,13 @@ public class ChessBoard {
         
     }
 
+    public ChessBoard(ChessBoard board)
+    {
+        for(int i=0;i<8;i++)
+            for(int j=0;j<8;j++)
+                squares[i][j] = board.squares[i][j];
+    }
+
     /**
      * Adds a chess piece to the chessboard
      *
@@ -45,7 +52,6 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        System.out.println("Reset Board");
         ChessPiece rookW = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
         ChessPiece knightW = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
         ChessPiece bishopW = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
