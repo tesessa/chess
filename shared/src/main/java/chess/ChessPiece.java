@@ -186,11 +186,11 @@ public class ChessPiece {
             }
         } else if(piece.getTeamColor().equals(ChessGame.TeamColor.BLACK)) {
             if(row == 7) {
-                if(col > 1 && board.getPiece(opponent3) != null &&
+                if(col > 1 && row > 1&& board.getPiece(opponent3) != null &&
                               board.getPiece(opponent3).getTeamColor() == ChessGame.TeamColor.WHITE) {
                     endPosition(moves, row-1, col-1, myPosition, board);
                 }
-                if(col < 8 && board.getPiece(opponent4) != null &&
+                if(col < 8 && row > 1 && board.getPiece(opponent4) != null &&
                               board.getPiece(opponent4).getTeamColor() == ChessGame.TeamColor.WHITE) {
                     endPosition(moves, row-1, col+1, myPosition, board);
                 }
@@ -202,10 +202,12 @@ public class ChessPiece {
                     endPosition(moves, row, col, myPosition, board);
                 }
             } else {
-                if(board.getPiece(opponent3) != null) {
+                if(col > 1 && board.getPiece(opponent3) != null &&
+                        board.getPiece(opponent3).getTeamColor() == ChessGame.TeamColor.WHITE) {
                     endPosition(moves, row-1, col-1, myPosition, board);
                 }
-                if(board.getPiece(opponent4) != null) {
+                if(col < 8 && board.getPiece(opponent4) != null &&
+                        board.getPiece(opponent4).getTeamColor() == ChessGame.TeamColor.WHITE) {
                     endPosition(moves, row-1, col+1, myPosition, board);
                 }
                 row--;
