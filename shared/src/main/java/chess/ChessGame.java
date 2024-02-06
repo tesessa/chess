@@ -70,6 +70,7 @@ public class ChessGame {
         ChessPiece piece = getBoard().getPiece(startPosition);
         TeamColor team = getBoard().getPiece(startPosition).getTeamColor();
         ChessBoard saveBoard = getBoard();
+        ChessPosition kingPosition = findKingPosition(team);
         if(getTeamTurn() == null) {
             setTeamTurn(team);
         }
@@ -80,13 +81,8 @@ public class ChessGame {
             return null;
         }
         if(isInCheck(team)) {
-            //ChessBoard saveBoard = getBoard();
-            //ChessPiece piece = getBoard().getPiece(startPosition);
-            ChessPosition kingPosition = findKingPosition(team);
-            Collection<ChessMove> enemyPositions = enemyPositions(team, kingPosition);
             Collection<ChessMove> temp;
             temp = (HashSet<ChessMove>) piece.pieceMoves(getBoard(), startPosition);
-            //System.out.println(temp);
                     for(ChessMove iterate : temp) {
                         setBoard(new ChessBoard(saveBoard));
                         getBoard().addPiece(iterate.getEndPosition(), getBoard().getPiece(startPosition));
@@ -97,7 +93,6 @@ public class ChessGame {
                     }
             setBoard(saveBoard);
         } else {
-           // ChessPiece piece = getBoard().getPiece(startPosition);
             HashSet<ChessMove> test = new HashSet<ChessMove>();
             test = (HashSet<ChessMove>) piece.pieceMoves(getBoard(), startPosition);
             for(ChessMove iterate : test) {
@@ -109,8 +104,6 @@ public class ChessGame {
                 }
             }
             setBoard(saveBoard);
-           // moves = (HashSet<ChessMove>) piece.pieceMoves(getBoard(), startPosition);
-          //System.out.println("Piece type: " + getBoard().getPiece(startPosition).getPieceType() + " Color: " + getBoard().getPiece(startPosition).getTeamColor() + moves);
         }
         return moves;
     }
