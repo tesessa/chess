@@ -1,8 +1,5 @@
 package server;
-import dataAccess.DataAccessException;
-import dataAccess.GameDataAccess;
-import dataAccess.MemoryUserDataAccess;
-import dataAccess.UserDataAccess;
+import dataAccess.*;
 import model.*;
 import service.*;
 import spark.*;
@@ -10,22 +7,25 @@ import com.google.gson.Gson;
 
 
 public class Server {
-    //private final UserService userService;
-    private final UserService user;
-    public Server(UserDataAccess userData) {
-        //UserDataAccess userData;
-        user = new UserService(userData);
+    private final UserDataAccess userMemory;
+    private final AuthDataAccess authMemory;
+    private final UserService uService;
 
-    }
 
    // private final GameDataAccess gameData = new
+
+   public Server() {
+        userMemory = new MemoryUserDataAccess();
+        authMemory = new MemoryAuthDataAccess();
+        uService = new UserService(userMemory, authMemory);
+    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
 
-        //Spark.post("/user", this::register);
+        Spark.post("/user", this::register);
 
 
         Spark.awaitInitialization();
@@ -39,8 +39,8 @@ public class Server {
 
     private Object register(Request req, Response res) throws DataAccessException {
         var user = new Gson().fromJson(req.body(), UserData.class);
-        user = user.register(user);
-        return new Gson().toJson(user);
+        String u = uService.register(user.username(), user.password(), user.email());
+        return new Gson().toJson(u);
 
     }
 }

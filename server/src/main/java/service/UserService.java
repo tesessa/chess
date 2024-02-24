@@ -1,19 +1,21 @@
 package service;
-import model.*;
 import dataAccess.UserDataAccess;
 import dataAccess.AuthDataAccess;
-import dataAccess.GameDataAccess;
-import java.util.UUID;
 
 public class UserService {
-    private final UserDataAccess userData;
+    private final UserDataAccess userMemory;
+    private final AuthDataAccess authMemory;
    // private final
-    public UserService(UserDataAccess userData) {
-        this.userData = userData;
+    public UserService(UserDataAccess userMemory, AuthDataAccess authMemory) {
+        this.userMemory = userMemory;
+        this.authMemory = authMemory;
     }
-    public AuthData register(UserData user) {
-     //   if(getUser(user.username()) == null)
-        return userData.register(user);
+    public String register(String username, String password, String email) {
+        if(userMemory.getUser(username) == null) {
+            userMemory.createUser(username, password, email);
+            return authMemory.createAuth(username);
+        }
+        return "";
     }
    // public AuthData login(UserData user) {}
     //public void logout(UserData user) {}
