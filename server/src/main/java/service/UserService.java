@@ -1,6 +1,9 @@
 package service;
+import Result.RegisterResult;
+import dataAccess.DataAccessException;
 import dataAccess.UserDataAccess;
 import dataAccess.AuthDataAccess;
+import model.*;
 
 public class UserService {
     private final UserDataAccess userMemory;
@@ -10,13 +13,26 @@ public class UserService {
         this.userMemory = userMemory;
         this.authMemory = authMemory;
     }
-    public String register(String username, String password, String email) {
-        if(userMemory.getUser(username) == null) {
-            userMemory.createUser(username, password, email);
-            return authMemory.createAuth(username);
-        }
-        return "";
+    public RegisterResult register(String username, String password, String email) throws DataAccessException {
+       // try {
+            if (userMemory.getUser(username) == null) {
+                userMemory.createUser(username, password, email);
+                AuthData auth = authMemory.createAuth(username);
+                RegisterResult r = new RegisterResult(username, auth.authToken(), null);
+                return r;
+            } else {
+               // throw new DataAccessException(403, "Error: already taken");
+                RegisterResult r = new RegisterResult(null, null, "Error: already taken");
+                return r;
+            }
+       // } catch (DataAccessException e) {
+         //   throw new DataAccessException(400, "Error: bad request");
+        //}
+
     }
+
+
+
    // public AuthData login(UserData user) {}
     //public void logout(UserData user) {}
 }

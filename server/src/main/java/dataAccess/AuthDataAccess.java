@@ -1,7 +1,9 @@
 package dataAccess;
 
-import model.UserData;
+import model.*;
 
 public interface AuthDataAccess {
-    String createAuth(String username);
+    AuthData createAuth(String username);
+
+    void clear();
 }
