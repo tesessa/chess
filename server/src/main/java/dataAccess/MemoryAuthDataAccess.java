@@ -7,19 +7,39 @@ import java.util.UUID;
 
 public class MemoryAuthDataAccess implements AuthDataAccess {
 
-    HashMap<String, String> ad = new HashMap<String, String>();
-    HashSet<String> at = new HashSet<String>();
+    HashMap<String, String> aData = new HashMap<String, String>();
+    HashSet<String> aTokens = new HashSet<String>();
 
     public AuthData createAuth(String username) {
         String authToken = UUID.randomUUID().toString();
         AuthData auth = new AuthData(authToken, username);
-        ad.put(authToken, username);
-        at.add(authToken);
+        aData.put(authToken, username);
+        aTokens.add(authToken);
          return auth;
     }
 
+    public AuthData getAuth(String auth) {
+       if(aData.get(auth) == null) {
+           return null;
+       }
+       String user = aData.get(auth);
+       AuthData tempAuth = new AuthData(auth, user);
+       return tempAuth;
+    }
+
+    public void deleteAuth(String auth) {
+        AuthData delete = getAuth(auth);
+        aData.remove(auth);
+        for(String loop : aTokens) {
+            if(loop.equals(delete)) {
+                aTokens.remove(loop);
+            }
+        }
+
+    }
+
     public void clear() {
-        ad.clear();
-        at.clear();
+        aData.clear();
+        aTokens.clear();
     }
 }

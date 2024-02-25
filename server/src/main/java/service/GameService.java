@@ -1,6 +1,6 @@
 package service;
 
-import Result.ClearResult;
+import Result.ErrorResult;
 import dataAccess.AuthDataAccess;
 import dataAccess.DataAccessException;
 import dataAccess.GameDataAccess;
@@ -17,11 +17,11 @@ public class GameService {
         this.authMemory = authMemory;
     }
 
-    public ClearResult clear() throws DataAccessException {
+    public ErrorResult clear() throws DataAccessException {
             gameMemory.clear();
             userMemory.clear();
             authMemory.clear();
-            ClearResult clear = new ClearResult("{}");
+            ErrorResult clear = new ErrorResult("{}");
             return clear;
     }
 }

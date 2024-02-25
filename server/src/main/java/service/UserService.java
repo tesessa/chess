@@ -1,9 +1,13 @@
 package service;
+import ExceptionClasses.AlreadyTakenException;
+import ExceptionClasses.BadRequestException;
+import Result.ErrorResult;
 import Result.RegisterResult;
-import dataAccess.DataAccessException;
+import dataAccess.*;
 import dataAccess.UserDataAccess;
 import dataAccess.AuthDataAccess;
 import model.*;
+import ExceptionClasses.*;
 
 public class UserService {
     private final UserDataAccess userMemory;
@@ -13,23 +17,41 @@ public class UserService {
         this.userMemory = userMemory;
         this.authMemory = authMemory;
     }
-    public RegisterResult register(String username, String password, String email) throws DataAccessException {
-       // try {
+    public RegisterResult register(String username, String password, String email) throws AlreadyTakenException, BadRequestException {
+            if(username == null || password == null || email == null) {
+                throw new BadRequestException();
+            }
             if (userMemory.getUser(username) == null) {
                 userMemory.createUser(username, password, email);
                 AuthData auth = authMemory.createAuth(username);
                 RegisterResult r = new RegisterResult(username, auth.authToken(), null);
                 return r;
             } else {
-               // throw new DataAccessException(403, "Error: already taken");
-                RegisterResult r = new RegisterResult(null, null, "Error: already taken");
-                return r;
+                throw new AlreadyTakenException();
             }
-       // } catch (DataAccessException e) {
-         //   throw new DataAccessException(400, "Error: bad request");
-        //}
-
     }
+
+    public RegisterResult login(String username, String password) throws UnauthorizedException {
+        if(userMemory.getUser(username) == null || userMemory.checkPassword(password) == null ||  !(userMemory.checkPassword(password).equals(username))) {
+            throw new UnauthorizedException();
+        } else {
+            AuthData auth = authMemory.createAuth(username);
+            RegisterResult r = new RegisterResult(username, auth.authToken(), null);
+            return r;
+        }
+    }
+
+    public ErrorResult logout(String auth) throws UnauthorizedException {
+       if(authMemory.getAuth(auth) == null) {
+           throw new UnauthorizedException();
+       } else {
+           authMemory.deleteAuth(auth);
+           ErrorResult r = new ErrorResult("");
+           return r;
+       }
+        //AuthData auth = authMemory.getAuth();
+    }
+
 
 
 
