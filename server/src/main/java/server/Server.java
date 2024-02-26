@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import Result.*;
 import ExceptionClasses.*;
 import Request.*;
+import chess.*;
 
 
 public class Server {
@@ -42,6 +43,7 @@ public class Server {
         Spark.post("/session", this::login);
         Spark.delete("/session", this::logout);
         Spark.post("/game", this::createGame);
+        Spark.put("/game", this::joinGame);
 
 
         Spark.awaitInitialization();
@@ -99,8 +101,7 @@ public class Server {
        try {
            var gameName = new Gson().fromJson(req.body(), CreateGameRequest.class);
            String auth = req.headers("authorization");
-           gameID = gService.createGame(String.valueOf(gameName), auth);
-          // return new Gson().toJson(gameID);
+           gameID = gService.createGame(gameName.gameName(), auth);
        } catch(UnauthorizedException e) {
            res.status(401);
            error = new ErrorResult(e.getMessage());
@@ -115,13 +116,21 @@ public class Server {
 
     private Object joinGame(Request req, Response res) {
        ErrorResult error;
-       var gameName = new Gson().toJson(req.body(), );
-       String auth = req.headers("authorization");
-       //error = gService.joinGame(String.valueOf(gameName), auth);
-       return "hey";
+       try {
+           var join = new Gson().fromJson(req.body(), JoinGameRequest.class);
+           String auth = req.headers("authorization");
+           error = gService.joinGame(join.color(), join.gameID(), auth);
+       } catch (UnauthorizedException e) {
+           res.status(401);
+           error = new ErrorResult(e.getMessage());
+       } catch (BadRequestException e) {
+           res.status(400);
+           error = new ErrorResult(e.getMessage());
+       }
+       return new Gson().toJson(error);
     }
 
-   /* private Object listGames(Request req, Response res) {
+    /*private Object listGames(Request req, Response res) {
 
     }*/
 

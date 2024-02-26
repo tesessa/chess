@@ -25,4 +25,28 @@ public class MemoryGameDataAccess implements GameDataAccess {
         games.add(data);
         return gameID;
     }
+
+    public GameData getGame(int gameID) {
+        Integer temp = Integer.valueOf(gameID);
+        return gd.get(temp);
+    }
+
+    public void updateGame(GameData game, String username, ChessGame.TeamColor color) {
+        GameData newData;
+        if(color == ChessGame.TeamColor.BLACK) {
+            newData = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
+        } else if(color == ChessGame.TeamColor.WHITE) {
+            newData = new GameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
+        } else {
+            newData = game;
+        }
+        for(GameData loop : games) {
+            if(loop.equals(game)) {
+                games.remove(game);
+            }
+        }
+        gd.remove(game.gameID());
+        gd.put(newData.gameID(), newData);
+        games.add(newData);
+    }
 }
