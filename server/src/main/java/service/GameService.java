@@ -2,15 +2,17 @@ package service;
 
 import ExceptionClasses.BadRequestException;
 import ExceptionClasses.UnauthorizedException;
-import Request.JoinGameRequest;
 import Result.CreateGameResult;
 import Result.ErrorResult;
+import Result.GameInformation;
 import chess.ChessGame;
 import dataAccess.AuthDataAccess;
 import dataAccess.DataAccessException;
 import dataAccess.GameDataAccess;
 import dataAccess.UserDataAccess;
 import model.GameData;
+
+import java.util.HashSet;
 
 public class GameService {
     private final UserDataAccess userMemory;
@@ -56,6 +58,16 @@ public class GameService {
         }
         ErrorResult r = new ErrorResult("{}");
         return r;
+    }
+
+    public HashSet<GameInformation> listGames(String auth) throws UnauthorizedException {
+        HashSet<GameInformation> games;
+        if(authMemory.getAuth(auth) == null) {
+            throw new UnauthorizedException();
+        } else {
+            games = gameMemory.listGames();
+        }
+        return games;
     }
 
     public ErrorResult clear() throws DataAccessException {

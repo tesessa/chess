@@ -8,7 +8,8 @@ import com.google.gson.Gson;
 import Result.*;
 import ExceptionClasses.*;
 import Request.*;
-import chess.*;
+
+import java.util.HashSet;
 
 
 public class Server {
@@ -44,6 +45,7 @@ public class Server {
         Spark.delete("/session", this::logout);
         Spark.post("/game", this::createGame);
         Spark.put("/game", this::joinGame);
+        Spark.get("/game", this::listGames);
 
 
         Spark.awaitInitialization();
@@ -130,9 +132,21 @@ public class Server {
        return new Gson().toJson(error);
     }
 
-    /*private Object listGames(Request req, Response res) {
-
-    }*/
+    private Object listGames(Request req, Response res)  {
+       ErrorResult error;
+       HashSet<GameInformation> gamesList;
+       ListGameResult games;
+        try {
+            String auth = req.headers("authorization");
+            gamesList = gService.listGames(auth);
+            games = new ListGameResult(gamesList);
+        } catch (UnauthorizedException e) {
+            res.status(401);
+            error = new ErrorResult(e.getMessage());
+            return new Gson().toJson(error);
+        }
+        return new Gson().toJson(games);
+    }
 
     private Object clear(Request req, Response res) {
        ErrorResult clear;

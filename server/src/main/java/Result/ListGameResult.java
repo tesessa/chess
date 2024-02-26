@@ -1,4 +1,6 @@
 package Result;
 
-public record ListGameResult(int gameID, String whiteUsername, String blackUsername, String gameName) {
+import java.util.HashSet;
+
+public record ListGameResult(HashSet<GameInformation> games) {
 }
