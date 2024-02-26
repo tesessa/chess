@@ -41,6 +41,7 @@ public class Server {
         Spark.delete("/db", this::clear);
         Spark.post("/session", this::login);
         Spark.delete("/session", this::logout);
+        Spark.post("/game", this::createGame);
 
 
         Spark.awaitInitialization();
@@ -51,6 +52,7 @@ public class Server {
         Spark.stop();
         Spark.awaitStop();
     }
+
 
     private Object register(Request req, Response res) {
        RegisterResult u;
@@ -82,14 +84,46 @@ public class Server {
    private Object logout(Request req, Response res) throws UnauthorizedException {
        ErrorResult logout;
        try {
-           var auth = new Gson().fromJson(req.params("authorization: <authToken>"), LogoutRequest.class);
-           logout = uService.logout(auth.authToken());
+           String auth = req.headers("authorization");
+           logout = uService.logout(auth);
        } catch(UnauthorizedException e) {
            res.status(401);
            logout = new ErrorResult(e.getMessage());
        }
        return new Gson().toJson(logout);
     }
+
+    private Object createGame(Request req, Response res) {
+       CreateGameResult gameID;
+       ErrorResult error;
+       try {
+           var gameName = new Gson().fromJson(req.body(), CreateGameRequest.class);
+           String auth = req.headers("authorization");
+           gameID = gService.createGame(String.valueOf(gameName), auth);
+          // return new Gson().toJson(gameID);
+       } catch(UnauthorizedException e) {
+           res.status(401);
+           error = new ErrorResult(e.getMessage());
+           return new Gson().toJson(error);
+       } catch(BadRequestException e) {
+           res.status(400);
+           error = new ErrorResult(e.getMessage());
+           return new Gson().toJson(error);
+       }
+       return new Gson().toJson(gameID);
+    }
+
+    private Object joinGame(Request req, Response res) {
+       ErrorResult error;
+       var gameName = new Gson().toJson(req.body(), );
+       String auth = req.headers("authorization");
+       //error = gService.joinGame(String.valueOf(gameName), auth);
+       return "hey";
+    }
+
+   /* private Object listGames(Request req, Response res) {
+
+    }*/
 
     private Object clear(Request req, Response res) {
        ErrorResult clear;
