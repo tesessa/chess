@@ -121,12 +121,15 @@ public class Server {
        try {
            var join = new Gson().fromJson(req.body(), JoinGameRequest.class);
            String auth = req.headers("authorization");
-           error = gService.joinGame(join.color(), join.gameID(), auth);
+           error = gService.joinGame(join.playerColor(), join.gameID(), auth);
        } catch (UnauthorizedException e) {
            res.status(401);
            error = new ErrorResult(e.getMessage());
        } catch (BadRequestException e) {
            res.status(400);
+           error = new ErrorResult(e.getMessage());
+       } catch (AlreadyTakenException e) {
+           res.status(403);
            error = new ErrorResult(e.getMessage());
        }
        return new Gson().toJson(error);

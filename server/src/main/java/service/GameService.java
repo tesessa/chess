@@ -1,5 +1,6 @@
 package service;
 
+import ExceptionClasses.AlreadyTakenException;
 import ExceptionClasses.BadRequestException;
 import ExceptionClasses.UnauthorizedException;
 import Result.CreateGameResult;
@@ -39,7 +40,7 @@ public class GameService {
        return gameID;
     }
 
-    public ErrorResult joinGame(ChessGame.TeamColor color, int gameID, String auth) throws UnauthorizedException, BadRequestException {
+    public ErrorResult joinGame(ChessGame.TeamColor color, int gameID, String auth) throws UnauthorizedException, AlreadyTakenException, BadRequestException {
         if(authMemory.getAuth(auth) == null) {
             throw new UnauthorizedException();
         }
@@ -49,10 +50,10 @@ public class GameService {
             String username = authMemory.getAuth(auth).username();
             GameData game = gameMemory.getGame(gameID);
             if(color == ChessGame.TeamColor.BLACK && game.blackUsername() != null) {
-                throw new BadRequestException();
+                throw new AlreadyTakenException();
             }
             if (color == ChessGame.TeamColor.WHITE && game.whiteUsername() != null) {
-                throw new BadRequestException();
+                throw new AlreadyTakenException();
             }
             gameMemory.updateGame(game, username, color);
         }
