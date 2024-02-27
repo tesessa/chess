@@ -151,13 +151,10 @@ public class ServiceUnitTests {
         AuthData newAuth = authMemory.createAuth("username");
         for(int i = 0; i < 5; i++) {
             int gameID = i + 1;
-            System.out.println(gameID);
             String gameName = "game" + String.valueOf(gameID);
             gService.createGame(gameName, newAuth.authToken());
             expectedGames.add(new GameInformation(gameID, null, null, gameName));
         }
-        System.out.println(expectedGames);
-        System.out.println(gService.listGames(newAuth.authToken()));
         actualGames = gService.listGames(newAuth.authToken());
         Assertions.assertEquals(expectedGames, actualGames);
     }
@@ -171,22 +168,71 @@ public class ServiceUnitTests {
     }
 
     @Test
-    public void testGoodJoinGame() throws UnauthorizedException, BadRequestException, AlreadyTakenException {
-        testGoodListGames();
+    public void testGoodJoinGame() throws UnauthorizedException, BadRequestException, AlreadyTakenException, DataAccessException {
         HashSet<GameInformation> expectedGames = new HashSet<GameInformation>();
-        AuthData newAuth = authMemory.createAuth("username");
-        
-
+        HashSet<GameInformation> actualGames = new HashSet<GameInformation>();
+        AuthData newAuth = authMemory.createAuth("Tessa");
+        expectedGames.add(new GameInformation(2, null, null, "game2"));
+        expectedGames.add(new GameInformation(1, null, "Tessa", "game1"));
+        gService.createGame("game1", newAuth.authToken());
+        gService.createGame("game2", newAuth.authToken());
+        gService.joinGame(ChessGame.TeamColor.BLACK, 1, newAuth.authToken());
+        actualGames = gService.listGames(newAuth.authToken());
+        Assertions.assertEquals(expectedGames,actualGames);
+        // test with more variables
+        expectedGames.clear();
+        gService.clear();
+        actualGames.clear();
+        AuthData user1 = authMemory.createAuth("Jake");
+        AuthData user2 = authMemory.createAuth("Austin");
+        AuthData user3 = authMemory.createAuth("Nick");
+        AuthData user4 = authMemory.createAuth("Tessa");
+        expectedGames.add(new GameInformation(3, "Jake", null, "Game3"));
+        expectedGames.add(new GameInformation(2, null, "Nick", "Game2"));
+        expectedGames.add(new GameInformation(1,"Austin", "Tessa", "Game1"));
+        gService.createGame("Game1", user1.authToken());
+        gService.createGame("Game2", user2.authToken());
+        gService.createGame("Game3", user4.authToken());
+        gService.joinGame(ChessGame.TeamColor.WHITE, 1, user2.authToken());
+        gService.joinGame(ChessGame.TeamColor.WHITE, 3, user1.authToken());
+        gService.joinGame(ChessGame.TeamColor.BLACK, 2, user3.authToken());
+        gService.joinGame(ChessGame.TeamColor.BLACK, 1, user4.authToken());
+        actualGames = gService.listGames(user3.authToken());
+        Assertions.assertEquals(expectedGames, actualGames);
     }
 
     @Test
-    public void testBadJoinGame() {
-
+    public void testBadJoinGame() throws UnauthorizedException, BadRequestException, AlreadyTakenException, DataAccessException{
+        testGoodJoinGame();
+        AuthData authToken = authMemory.createAuth("user");
+        String fakeAuth = "123";
+        Assertions.assertThrows(UnauthorizedException.class, () -> {
+            gService.joinGame(ChessGame.TeamColor.WHITE, 2, fakeAuth);
+        });
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            gService.joinGame(ChessGame.TeamColor.BLACK, 5, authToken.authToken());
+        });
+        Assertions.assertThrows(AlreadyTakenException.class, () -> {
+            gService.joinGame(ChessGame.TeamColor.WHITE, 1, authToken.authToken());
+        });
     }
 
     @Test
-    public void clear() {
-
+    public void clear() throws UnauthorizedException, AlreadyTakenException, BadRequestException, DataAccessException {
+        HashSet<GameInformation> emptyGameList = new HashSet<GameInformation>();
+        HashSet<GameInformation> emptyList = new HashSet<GameInformation>();
+        testGoodJoinGame();
+        AuthData newAuth = authMemory.createAuth("Temporary");
+        uService.register("Tessa", "password", "email");
+        gService.clear();
+        AuthData emptyAuth = authMemory.getAuth(newAuth.authToken());
+        GameData emptyGame = gameMemory.getGame(1);
+        emptyGameList = gameMemory.listGames();
+        UserData emptyUser = userMemory.getUser("Tessa");
+        Assertions.assertEquals(null, emptyAuth);
+        Assertions.assertEquals(null, emptyGame);
+        Assertions.assertEquals(emptyList, emptyGameList);
+        Assertions.assertEquals(null, emptyUser);
     }
 
 
