@@ -24,7 +24,7 @@ public class UserService {
             if (userMemory.getUser(username) == null) {
                 userMemory.createUser(username, password, email);
                 AuthData auth = authMemory.createAuth(username);
-                RegisterResult r = new RegisterResult(username, auth.authToken(), null);
+                RegisterResult r = new RegisterResult(username, auth.authToken());
                 return r;
             } else {
                 throw new AlreadyTakenException();
@@ -36,7 +36,7 @@ public class UserService {
             throw new UnauthorizedException();
         } else {
             AuthData auth = authMemory.createAuth(username);
-            RegisterResult r = new RegisterResult(username, auth.authToken(), null);
+            RegisterResult r = new RegisterResult(username, auth.authToken());
             return r;
         }
     }
@@ -49,12 +49,6 @@ public class UserService {
            ErrorResult r = new ErrorResult("");
            return r;
        }
-        //AuthData auth = authMemory.getAuth();
     }
 
-
-
-
-   // public AuthData login(UserData user) {}
-    //public void logout(UserData user) {}
 }

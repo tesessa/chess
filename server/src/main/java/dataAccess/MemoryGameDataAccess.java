@@ -53,16 +53,8 @@ public class MemoryGameDataAccess implements GameDataAccess {
             newData = game;
             newList = temp;
         }
-        for(GameData loop : games) {
-            if(loop.equals(game)) {
-                games.remove(game);
-            }
-        }
-        for(GameInformation loop : printGames) {
-            if((loop.gameID()) == (game.gameID())) {
-                printGames.remove(temp);
-            }
-        }
+        games.remove(game);
+        printGames.remove(temp);
         gd.remove(game.gameID());
         gd.put(newData.gameID(), newData);
         games.add(newData);

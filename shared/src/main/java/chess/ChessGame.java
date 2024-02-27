@@ -252,16 +252,6 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-       // System.out.println(getBoard());
-       // boolean isCheckMate = true;
-        // Get all possible moves for the king's team
-        // for each of these moves
-            // make a copy of the board
-            // perform the move on the copy of the board
-            // if(king is not in check on this board
-             //  isCheckMate=false;
-               //break;
-        //return isCheckMate;
         ChessBoard tempBoard = new ChessBoard(getBoard());
         ChessPosition kingPosition = findKingPosition(teamColor);
         if(kingPosition == null) {

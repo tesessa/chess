@@ -6,4 +6,8 @@ public class AlreadyTakenException extends Exception {
         super("Error: already taken");
         statusCode = 403;
     }
+
+    public int getStatusCode() {
+        return statusCode;
+    }
 }

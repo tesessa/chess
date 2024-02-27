@@ -60,27 +60,32 @@ public class Server {
 
     private Object register(Request req, Response res) {
        RegisterResult u;
+       ErrorResult error;
        try {
            var user = new Gson().fromJson(req.body(), UserData.class);
            u = uService.register(user.username(), user.password(), user.email());
        } catch(AlreadyTakenException e) {
-           res.status(403);
-           u = new RegisterResult(null, null, e.getMessage());
+           res.status(e.getStatusCode());
+           error = new ErrorResult(e.getMessage());
+           return new Gson().toJson(error);
        } catch(BadRequestException e) {
-            res.status(400);
-            u = new RegisterResult(null, null, e.getMessage());
+            res.status(e.getStatusCode());
+            error = new ErrorResult( e.getMessage());
+            return new Gson().toJson(error);
        }
        return new Gson().toJson(u);
     }
 
     private Object login(Request req, Response res) {
        RegisterResult u;
+       ErrorResult error;
        try {
            var user = new Gson().fromJson(req.body(), LoginRequest.class);
            u = uService.login(user.username(), user.password());
        } catch(UnauthorizedException e) {
-           res.status(401);
-           u = new RegisterResult(null, null, e.getMessage());
+           res.status(e.getStatusCode());
+           error = new ErrorResult(e.getMessage());
+           return new Gson().toJson(error);
        }
        return new Gson().toJson(u);
     }
@@ -91,7 +96,7 @@ public class Server {
            String auth = req.headers("authorization");
            logout = uService.logout(auth);
        } catch(UnauthorizedException e) {
-           res.status(401);
+           res.status(e.getStatusCode());
            logout = new ErrorResult(e.getMessage());
        }
        return new Gson().toJson(logout);
@@ -105,11 +110,11 @@ public class Server {
            String auth = req.headers("authorization");
            gameID = gService.createGame(gameName.gameName(), auth);
        } catch(UnauthorizedException e) {
-           res.status(401);
+           res.status(e.getStatusCode());
            error = new ErrorResult(e.getMessage());
            return new Gson().toJson(error);
        } catch(BadRequestException e) {
-           res.status(400);
+           res.status(e.getStatusCode());
            error = new ErrorResult(e.getMessage());
            return new Gson().toJson(error);
        }
@@ -123,13 +128,13 @@ public class Server {
            String auth = req.headers("authorization");
            error = gService.joinGame(join.playerColor(), join.gameID(), auth);
        } catch (UnauthorizedException e) {
-           res.status(401);
+           res.status(e.getStatusCode());
            error = new ErrorResult(e.getMessage());
        } catch (BadRequestException e) {
-           res.status(400);
+           res.status(e.getStatusCode());
            error = new ErrorResult(e.getMessage());
        } catch (AlreadyTakenException e) {
-           res.status(403);
+           res.status(e.getStatusCode());
            error = new ErrorResult(e.getMessage());
        }
        return new Gson().toJson(error);
@@ -144,7 +149,7 @@ public class Server {
             gamesList = gService.listGames(auth);
             games = new ListGameResult(gamesList);
         } catch (UnauthorizedException e) {
-            res.status(401);
+            res.status(e.getStatusCode());
             error = new ErrorResult(e.getMessage());
             return new Gson().toJson(error);
         }

@@ -20,5 +20,6 @@ public class MemoryUserDataAccess implements UserDataAccess {
 
     public void clear() {
         ud.clear();
+        getPassword.clear();
     }
 }
