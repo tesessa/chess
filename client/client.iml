@@ -9,7 +9,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="shared" />
     <orderEntry type="module" module-name="server" scope="TEST" />
-    <orderEntry type="library" name="google.code.gson" level="project" />
+    <orderEntry type="library" name="org.springframework.security:spring-security-core:6.2.1" level="project" />
     <orderEntry type="library" name="junit.jupiter" level="project" />
   </component>
 </module>

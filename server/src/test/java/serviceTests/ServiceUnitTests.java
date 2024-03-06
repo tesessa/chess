@@ -21,6 +21,7 @@ import service.UserService;
 import model.*;
 
 import java.net.HttpURLConnection;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -50,7 +51,7 @@ public class ServiceUnitTests {
     }
 
     @Test
-    public void testGoodRegister() throws AlreadyTakenException, BadRequestException {
+    public void testGoodRegister() throws AlreadyTakenException, BadRequestException, DataAccessException, SQLException {
         String username = "Tessa";
         String password = "Andersen";
         String email = "tessaeliseandersen@yahoo.com";
@@ -64,7 +65,7 @@ public class ServiceUnitTests {
     }
 
     @Test
-    public void testBadRegister() throws AlreadyTakenException, BadRequestException, DataAccessException{
+    public void testBadRegister() throws AlreadyTakenException, BadRequestException, DataAccessException, SQLException {
         uService.register("Tessa", "hey", "email");
         String email = null;
         Assertions.assertThrows(AlreadyTakenException.class, () -> {
@@ -76,7 +77,7 @@ public class ServiceUnitTests {
     }
 
     @Test
-    public void testGoodLogin() throws UnauthorizedException, AlreadyTakenException, BadRequestException {
+    public void testGoodLogin() throws UnauthorizedException, AlreadyTakenException, BadRequestException, DataAccessException, SQLException {
         String username = "Tessa";
         String password = "password";
         uService.register(username, password, "email");
@@ -87,7 +88,7 @@ public class ServiceUnitTests {
     }
 
     @Test
-    public void testBadLogin() throws UnauthorizedException, AlreadyTakenException, BadRequestException {
+    public void testBadLogin() throws UnauthorizedException, AlreadyTakenException, BadRequestException, DataAccessException, SQLException {
         uService.register("Tessa", "password", "email");
         UserData expected = new UserData("Tessa", "password", "email");
         Assertions.assertEquals(expected, userMemory.getUser("Tessa"));
@@ -97,7 +98,7 @@ public class ServiceUnitTests {
     }
 
     @Test
-    public void testGoodLogout() throws UnauthorizedException, AlreadyTakenException, BadRequestException {
+    public void testGoodLogout() throws UnauthorizedException, AlreadyTakenException, BadRequestException, DataAccessException, SQLException {
        AuthData actual;
        RegisterResult register =  uService.register("Tessa", "password", "email");
        actual = new AuthData(register.authToken(), register.username());
@@ -111,7 +112,7 @@ public class ServiceUnitTests {
     }
 
     @Test
-    public void testBadLogout() throws UnauthorizedException, AlreadyTakenException, BadRequestException {
+    public void testBadLogout() throws UnauthorizedException, AlreadyTakenException, BadRequestException, DataAccessException {
         AuthData newAuth = authMemory.createAuth("Tessa");
         ErrorResult success = uService.logout(newAuth.authToken());
         Assertions.assertEquals("", success.message());
@@ -123,7 +124,7 @@ public class ServiceUnitTests {
     }
 
     @Test
-    public void testGoodCreateGame() throws BadRequestException, UnauthorizedException {
+    public void testGoodCreateGame() throws BadRequestException, UnauthorizedException, DataAccessException {
         AuthData newAuth = authMemory.createAuth("Tessa");
         CreateGameResult gameResult = gService.createGame("gameName", newAuth.authToken());
         GameData gameInMemory = gameMemory.getGame(gameResult.gameID());
@@ -218,7 +219,7 @@ public class ServiceUnitTests {
     }
 
     @Test
-    public void clear() throws UnauthorizedException, AlreadyTakenException, BadRequestException, DataAccessException {
+    public void clear() throws UnauthorizedException, AlreadyTakenException, BadRequestException, DataAccessException, SQLException {
         HashSet<GameInformation> emptyGameList = new HashSet<GameInformation>();
         HashSet<GameInformation> emptyList = new HashSet<GameInformation>();
         testGoodJoinGame();
