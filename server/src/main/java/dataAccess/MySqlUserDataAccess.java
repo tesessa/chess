@@ -51,6 +51,9 @@ public class MySqlUserDataAccess implements UserDataAccess {
 
     public boolean verifyUser(String username, String password) throws DataAccessException, SQLException {
         UserData data = getUser(username);
+        if(data == null) {
+            return false;
+        }
         var hashedPassword = data.password();
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         return encoder.matches(password, hashedPassword);

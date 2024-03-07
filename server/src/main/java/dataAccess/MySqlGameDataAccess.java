@@ -48,16 +48,16 @@ public class MySqlGameDataAccess implements GameDataAccess {
     public void updateGame(GameData game, String username, ChessGame.TeamColor color) throws DataAccessException {
         var json = new Gson().toJson(game);
         var gameId = game.gameID();
+        ChessGame chessGame = game.game();
         var statement = "";
         if(color == ChessGame.TeamColor.WHITE) {
-            statement = "UPDATE game SET whiteUsername=? WHERE  gameID=?";
+            statement = "UPDATE game SET whiteUsername=?, json=? WHERE gameID=?";
         } else if(color == ChessGame.TeamColor.BLACK) {
-            statement = "UPDATE game SET blackUsername=? WHERE gameID=?";
+            statement = "UPDATE game SET blackUsername=?, json=? WHERE gameID=?";
         } else {
             return;
         }
-        executeUpdate(statement, username, game.gameID());
-
+        executeUpdate(statement, username, new Gson().toJson(chessGame), game.gameID());
     }
 
     public HashSet<GameInformation> listGames() throws DataAccessException {
