@@ -7,7 +7,7 @@ import model.GameData;
 import java.util.HashSet;
 
 public interface GameDataAccess {
-    void clear();
+    void clear() throws DataAccessException;
 
     GameData getGame(int gameID) throws DataAccessException;
 
@@ -15,5 +15,5 @@ public interface GameDataAccess {
 
     void updateGame(GameData game, String username, ChessGame.TeamColor color);
 
-    HashSet<GameInformation> listGames();
+    HashSet<GameInformation> listGames() throws DataAccessException;
 }

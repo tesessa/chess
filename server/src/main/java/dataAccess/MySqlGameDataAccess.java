@@ -30,6 +30,7 @@ public class MySqlGameDataAccess implements GameDataAccess {
         } catch (Exception e) {
             throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
         }
+        return null;
     }
 
     public int createGame(String gameName) throws DataAccessException {
@@ -37,19 +38,33 @@ public class MySqlGameDataAccess implements GameDataAccess {
         ChessGame game = new ChessGame();
         var json = new Gson().toJson(game);
         var id = executeUpdate(statement, gameName, json);
-        return 1;
+        return id;
     }
 
     public void updateGame(GameData game, String username, ChessGame.TeamColor color) {
 
     }
 
-    public HashSet<GameInformation> listGames() {
-
+    public HashSet<GameInformation> listGames() throws DataAccessException {
+        var result = new HashSet<GameInformation>();
+        try(var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT gameID, whiteUsername, blackUsername, gameName FROM game";
+            try(var ps = conn.prepareStatement(statement)) {
+                try(var rs = ps.executeQuery()) {
+                    while(rs.next()) {
+                        result.add(readGameInformation(rs));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
+        return result;
     }
 
-    public void clear() {
-
+    public void clear() throws DataAccessException {
+        var statement = "TRUNCATE game";
+        executeUpdate(statement);
     }
 
     private GameData readGame(ResultSet rs) throws SQLException {
@@ -60,6 +75,15 @@ public class MySqlGameDataAccess implements GameDataAccess {
         var gameName = rs.getString("gameName");
         var game = new Gson().fromJson(json, ChessGame.class);
         GameData gameInfo = new GameData(id, whiteUsername, blackUsername, gameName, game);
+        return gameInfo;
+    }
+
+    private GameInformation readGameInformation(ResultSet rs) throws SQLException {
+        var id = rs.getInt("gameID");
+        var whiteUsername = rs.getString("whiteUsername");
+        var blackUsername = rs.getString("blackUsername");
+        var gameName = rs.getString("gameName");
+        GameInformation gameInfo = new GameInformation(id, whiteUsername, blackUsername, gameName);
         return gameInfo;
     }
 
