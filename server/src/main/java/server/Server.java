@@ -38,8 +38,12 @@ public class Server {
        } catch (DataAccessException e) {
            throw new RuntimeException(e);
        }
-       gameMemory = new MemoryGameDataAccess();
-        uService = new UserService(userMemory, authMemory);
+       try {
+           gameMemory = new MySqlGameDataAccess();
+       } catch (DataAccessException e) {
+           throw new RuntimeException(e);
+       }
+       uService = new UserService(userMemory, authMemory);
         gService = new GameService(gameMemory, userMemory, authMemory);
     }
 

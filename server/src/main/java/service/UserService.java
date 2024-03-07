@@ -34,7 +34,7 @@ public class UserService {
     }
 
     public RegisterResult login(String username, String password) throws UnauthorizedException, DataAccessException, SQLException {
-        if(userMemory.getUser(username) == null || userMemory.checkPassword(password) == null ||  !(userMemory.checkPassword(password).equals(username))) {
+        if(userMemory.getUser(username) == null || userMemory.checkPassword(password, username) == null ||  !(userMemory.checkPassword(password,username).equals(username))) {
             throw new UnauthorizedException();
         } else {
             AuthData auth = authMemory.createAuth(username);

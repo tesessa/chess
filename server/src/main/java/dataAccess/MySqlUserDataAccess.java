@@ -1,6 +1,8 @@
 package dataAccess;
 import model.*;
 import com.google.gson.Gson;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.sql.*;
@@ -17,7 +19,9 @@ public class MySqlUserDataAccess implements UserDataAccess {
 
     public void createUser(String username, String password, String email) throws DataAccessException {
         var statement = "INSERT INTO user (username, password, email) VALUES (?,?,?)";
-        executeUpdate(statement, username, password, email);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hashedPassword = encoder.encode(password);
+        executeUpdate(statement, username, hashedPassword, email);
     }
 
     public UserData getUser(String username) throws DataAccessException, SQLException {
@@ -37,31 +41,24 @@ public class MySqlUserDataAccess implements UserDataAccess {
         return null;
     }
 
-    public String checkPassword(String password) throws DataAccessException, SQLException {
-        try(var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username FROM user WHERE password=?";
-            try(var ps = conn.prepareStatement(statement)) {
-                ps.setString(1, password);
-                try(var rs = ps.executeQuery()) {
-                    if(rs.next()) {
-                        return readPassword(rs);
-                    }
-                }
-            }
-        } catch(DataAccessException e) {
-            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+    public String checkPassword(String password, String username) throws DataAccessException, SQLException {
+        if(verifyUser(username, password) == true) {
+            return getUser(username).username();
+        } else {
+            return null;
         }
-        return null;
+    }
+
+    public boolean verifyUser(String username, String password) throws DataAccessException, SQLException {
+        UserData data = getUser(username);
+        var hashedPassword = data.password();
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        return encoder.matches(password, hashedPassword);
     }
 
     public void clear() throws DataAccessException {
        var statement = "TRUNCATE user";
        executeUpdate(statement);
-    }
-
-    private String readPassword(ResultSet rs) throws SQLException {
-        var username = rs.getString("username");
-        return username;
     }
 
     private UserData readUser(ResultSet rs) throws SQLException {

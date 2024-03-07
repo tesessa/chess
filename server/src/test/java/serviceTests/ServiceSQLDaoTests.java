@@ -2,6 +2,7 @@ package serviceTests;
 
 import dataAccess.*;
 import org.junit.jupiter.api.BeforeAll;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import service.GameService;
 import service.UserService;
 import ExceptionClasses.AlreadyTakenException;
@@ -23,47 +24,84 @@ public class ServiceSQLDaoTests {
     private static MySqlUserDataAccess userMemory;
     private static MySqlAuthDataAccess authMemory;
     private static MySqlGameDataAccess gameMemory;
-    private static GameService gService;
-    private static UserService uService;
 
     @BeforeAll
     public static void setUp() throws DataAccessException {
         gameMemory = new MySqlGameDataAccess();
         userMemory = new MySqlUserDataAccess();
         authMemory = new MySqlAuthDataAccess();
-        gService = new GameService(gameMemory, userMemory, authMemory);
-        uService = new UserService(userMemory, authMemory);
     }
 
     @BeforeEach
     public void clearMemory() throws DataAccessException {
-        gService.clear();
+        gameMemory.clear();
+        userMemory.clear();
+        authMemory.clear();
     }
 
     @Test
-    public void goodRegister() throws AlreadyTakenException, BadRequestException, DataAccessException, SQLException {
-        String username = "username";
+    public void goodCreateUser() throws DataAccessException, SQLException {
         String password = "password";
-        String email = "email";
-        UserData expected = new UserData(username, password, email);
-        RegisterResult actual = uService.register(username, password, email);
-        AuthData actualAuth = new AuthData(actual.authToken(), actual.username());
-        Assertions.assertEquals(username, actual.username());
-        Assertions.assertEquals(expected, userMemory.getUser(username));
-        Assertions.assertNotNull(authMemory.getAuth(actual.authToken()), String.valueOf(actualAuth));
+        userMemory.createUser("username", password, "email");
+        UserData user = userMemory.getUser("username");
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hashedPassword = encoder.encode(password);
+        Assertions.assertEquals(true, userMemory.verifyUser("username", "password"));
+        Assertions.assertEquals("username", user.username());
+       // Assertions.assertEquals(hashedPassword, user.password());
+        Assertions.assertEquals("email", user.email());
     }
 
     @Test
-    public void badRegister() throws AlreadyTakenException, BadRequestException, DataAccessException, SQLException {
-        goodRegister();
-        String username = null;
-        Assertions.assertThrows(AlreadyTakenException.class, () -> {
-            uService.register("username", "hey", "email");
+    public void badCreateUser() throws DataAccessException, SQLException {
+        String email = null;
+        Assertions.assertThrows(DataAccessException.class, () -> {
+            userMemory.createUser("username", "password", null);
         });
-        Assertions.assertThrows(BadRequestException.class, () -> {
-            uService.register(username, "hey", "email");
+        goodCreateUser();
+        Assertions.assertThrows(DataAccessException.class, () -> {
+            userMemory.createUser("username", "password", "email");
         });
     }
+
+    @Test
+    public void goodGetUser() throws DataAccessException, SQLException{
+        goodCreateUser();
+        userMemory.createUser("Tessa", "hey", "hi");
+        UserData expected1 = new UserData("username", "password", "email");
+        UserData expected2 = new UserData("Tessa", "hey", "hi");
+        UserData actual1 = userMemory.getUser("username");
+        UserData actual2 = userMemory.getUser("Tessa");
+        Assertions.assertEquals(expected1, actual1);
+        Assertions.assertEquals(expected2, actual2);
+    }
+
+    @Test
+    public void badGetUser() {
+
+    }
+
+    @Test
+    public void goodCheckPassword() {
+
+    }
+
+    @Test
+    public void badCheckPassword() {
+
+    }
+
+    @Test
+    public void goodClearUser() {
+
+    }
+
+    @Test
+    public void badClearUser() {
+
+    }
+
+
 }
 
 
