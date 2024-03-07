@@ -13,6 +13,7 @@ import dataAccess.GameDataAccess;
 import dataAccess.UserDataAccess;
 import model.GameData;
 
+import java.sql.SQLException;
 import java.util.HashSet;
 
 public class GameService {
@@ -27,7 +28,7 @@ public class GameService {
         this.authMemory = authMemory;
     }
 
-    public CreateGameResult createGame(String gameName, String auth) throws UnauthorizedException, BadRequestException {
+    public CreateGameResult createGame(String gameName, String auth) throws UnauthorizedException, BadRequestException, DataAccessException, SQLException {
         CreateGameResult gameID;
        if(authMemory.getAuth(auth) == null) {
            throw new UnauthorizedException();
@@ -40,7 +41,7 @@ public class GameService {
        return gameID;
     }
 
-    public ErrorResult joinGame(ChessGame.TeamColor color, int gameID, String auth) throws UnauthorizedException, AlreadyTakenException, BadRequestException {
+    public ErrorResult joinGame(ChessGame.TeamColor color, int gameID, String auth) throws UnauthorizedException, AlreadyTakenException, BadRequestException, DataAccessException, SQLException {
         if(authMemory.getAuth(auth) == null) {
             throw new UnauthorizedException();
         }
@@ -61,7 +62,7 @@ public class GameService {
         return r;
     }
 
-    public HashSet<GameInformation> listGames(String auth) throws UnauthorizedException {
+    public HashSet<GameInformation> listGames(String auth) throws UnauthorizedException, DataAccessException, SQLException{
         HashSet<GameInformation> games;
         if(authMemory.getAuth(auth) == null) {
             throw new UnauthorizedException();

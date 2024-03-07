@@ -112,7 +112,7 @@ public class ServiceUnitTests {
     }
 
     @Test
-    public void testBadLogout() throws UnauthorizedException, AlreadyTakenException, BadRequestException, DataAccessException {
+    public void testBadLogout() throws UnauthorizedException, AlreadyTakenException, BadRequestException, DataAccessException, SQLException {
         AuthData newAuth = authMemory.createAuth("Tessa");
         ErrorResult success = uService.logout(newAuth.authToken());
         Assertions.assertEquals("", success.message());
@@ -124,7 +124,7 @@ public class ServiceUnitTests {
     }
 
     @Test
-    public void testGoodCreateGame() throws BadRequestException, UnauthorizedException, DataAccessException {
+    public void testGoodCreateGame() throws BadRequestException, UnauthorizedException, DataAccessException, SQLException {
         AuthData newAuth = authMemory.createAuth("Tessa");
         CreateGameResult gameResult = gService.createGame("gameName", newAuth.authToken());
         GameData gameInMemory = gameMemory.getGame(gameResult.gameID());
@@ -146,7 +146,7 @@ public class ServiceUnitTests {
     }
 
     @Test
-    public void testGoodListGames() throws BadRequestException, UnauthorizedException {
+    public void testGoodListGames() throws BadRequestException, UnauthorizedException, DataAccessException, SQLException {
         HashSet<GameInformation> expectedGames = new HashSet<GameInformation>();
         HashSet<GameInformation> actualGames = new HashSet<GameInformation>();
         AuthData newAuth = authMemory.createAuth("username");
@@ -169,7 +169,7 @@ public class ServiceUnitTests {
     }
 
     @Test
-    public void testGoodJoinGame() throws UnauthorizedException, BadRequestException, AlreadyTakenException, DataAccessException {
+    public void testGoodJoinGame() throws UnauthorizedException, BadRequestException, AlreadyTakenException, DataAccessException, SQLException {
         HashSet<GameInformation> expectedGames = new HashSet<GameInformation>();
         HashSet<GameInformation> actualGames = new HashSet<GameInformation>();
         AuthData newAuth = authMemory.createAuth("Tessa");
@@ -203,7 +203,7 @@ public class ServiceUnitTests {
     }
 
     @Test
-    public void testBadJoinGame() throws UnauthorizedException, BadRequestException, AlreadyTakenException, DataAccessException{
+    public void testBadJoinGame() throws UnauthorizedException, BadRequestException, AlreadyTakenException, DataAccessException, SQLException {
         testGoodJoinGame();
         AuthData authToken = authMemory.createAuth("user");
         String fakeAuth = "123";

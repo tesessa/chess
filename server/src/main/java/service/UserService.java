@@ -43,7 +43,7 @@ public class UserService {
         }
     }
 
-    public ErrorResult logout(String auth) throws UnauthorizedException {
+    public ErrorResult logout(String auth) throws UnauthorizedException, DataAccessException, SQLException {
        if(authMemory.getAuth(auth) == null) {
            throw new UnauthorizedException();
        } else {

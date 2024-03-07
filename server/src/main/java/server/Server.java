@@ -33,8 +33,12 @@ public class Server {
        } catch (DataAccessException e) {
            throw new RuntimeException(e);
        }
-       authMemory = new MemoryAuthDataAccess();
-        gameMemory = new MemoryGameDataAccess();
+       try {
+           authMemory = new MySqlAuthDataAccess();
+       } catch (DataAccessException e) {
+           throw new RuntimeException(e);
+       }
+       gameMemory = new MemoryGameDataAccess();
         uService = new UserService(userMemory, authMemory);
         gService = new GameService(gameMemory, userMemory, authMemory);
     }
@@ -99,7 +103,7 @@ public class Server {
        return new Gson().toJson(u);
     }
 
-   private Object logout(Request req, Response res) throws UnauthorizedException {
+   private Object logout(Request req, Response res) throws UnauthorizedException, DataAccessException, SQLException {
        ErrorResult logout;
        try {
            String auth = req.headers("authorization");
@@ -111,7 +115,7 @@ public class Server {
        return new Gson().toJson(logout);
     }
 
-    private Object createGame(Request req, Response res) {
+    private Object createGame(Request req, Response res) throws DataAccessException {
        CreateGameResult gameID;
        ErrorResult error;
        try {
@@ -126,11 +130,19 @@ public class Server {
            res.status(e.getStatusCode());
            error = new ErrorResult(e.getMessage());
            return new Gson().toJson(error);
+       } catch(DataAccessException e) {
+           res.status(500);
+           error = new ErrorResult(e.getMessage());
+           return new Gson().toJson(error);
+       } catch(SQLException e) {
+           res.status(500);
+           error = new ErrorResult(e.getMessage());
+           return new Gson().toJson(error);
        }
        return new Gson().toJson(gameID);
     }
 
-    private Object joinGame(Request req, Response res) {
+    private Object joinGame(Request req, Response res) throws DataAccessException, SQLException {
        ErrorResult error;
        try {
            var join = new Gson().fromJson(req.body(), JoinGameRequest.class);
@@ -149,7 +161,7 @@ public class Server {
        return new Gson().toJson(error);
     }
 
-    private Object listGames(Request req, Response res)  {
+    private Object listGames(Request req, Response res) throws DataAccessException, SQLException {
        ErrorResult error;
        HashSet<GameInformation> gamesList;
        ListGameResult games;
