@@ -9,6 +9,7 @@ import Result.*;
 import ExceptionClasses.*;
 import Request.*;
 
+import java.sql.SQLException;
 import java.util.HashSet;
 
 
@@ -27,8 +28,12 @@ public class Server {
    // private final GameDataAccess gameData = new
 
    public Server() {
-        userMemory = new MemoryUserDataAccess();
-        authMemory = new MemoryAuthDataAccess();
+       try {
+           userMemory = new MySqlUserDataAccess();
+       } catch (DataAccessException e) {
+           throw new RuntimeException(e);
+       }
+       authMemory = new MemoryAuthDataAccess();
         gameMemory = new MemoryGameDataAccess();
         uService = new UserService(userMemory, authMemory);
         gService = new GameService(gameMemory, userMemory, authMemory);
@@ -58,7 +63,7 @@ public class Server {
     }
 
 
-    private Object register(Request req, Response res) {
+    private Object register(Request req, Response res) throws DataAccessException, SQLException {
        RegisterResult u;
        ErrorResult error;
        try {
@@ -72,11 +77,15 @@ public class Server {
             res.status(e.getStatusCode());
             error = new ErrorResult( e.getMessage());
             return new Gson().toJson(error);
+       } catch(DataAccessException e) {
+           res.status(500);
+           error = new ErrorResult(e.getMessage());
+           return new Gson().toJson(error);
        }
        return new Gson().toJson(u);
     }
 
-    private Object login(Request req, Response res) {
+    private Object login(Request req, Response res) throws DataAccessException, SQLException {
        RegisterResult u;
        ErrorResult error;
        try {

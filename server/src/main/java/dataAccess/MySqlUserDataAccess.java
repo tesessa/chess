@@ -69,7 +69,6 @@ public class MySqlUserDataAccess implements UserDataAccess {
         var password = rs.getString("password");
         var email = rs.getString("email");
         UserData user = new UserData(username, password, email);
-        //user = new Gson().fromJson(user, UserData.class);
         return user;
     }
 

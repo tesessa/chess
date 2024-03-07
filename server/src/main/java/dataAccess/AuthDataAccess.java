@@ -2,10 +2,12 @@ package dataAccess;
 
 import model.*;
 
-public interface AuthDataAccess {
-    AuthData createAuth(String username);
-    AuthData getAuth(String auth);
+import java.sql.SQLException;
 
-    void deleteAuth(String auth);
-    void clear();
+public interface AuthDataAccess {
+    AuthData createAuth(String username) throws DataAccessException;
+    AuthData getAuth(String auth) throws DataAccessException, SQLException;
+
+    void deleteAuth(String auth) throws DataAccessException;
+    void clear() throws DataAccessException;
 }

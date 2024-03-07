@@ -9,6 +9,8 @@ import dataAccess.AuthDataAccess;
 import model.*;
 import ExceptionClasses.*;
 
+import java.sql.SQLException;
+
 public class UserService {
     private final UserDataAccess userMemory;
     private final AuthDataAccess authMemory;
@@ -17,7 +19,7 @@ public class UserService {
         this.userMemory = userMemory;
         this.authMemory = authMemory;
     }
-    public RegisterResult register(String username, String password, String email) throws AlreadyTakenException, BadRequestException {
+    public RegisterResult register(String username, String password, String email) throws AlreadyTakenException, BadRequestException, DataAccessException, SQLException {
             if(username == null || password == null || email == null) {
                 throw new BadRequestException();
             }
@@ -31,7 +33,7 @@ public class UserService {
             }
     }
 
-    public RegisterResult login(String username, String password) throws UnauthorizedException {
+    public RegisterResult login(String username, String password) throws UnauthorizedException, DataAccessException, SQLException {
         if(userMemory.getUser(username) == null || userMemory.checkPassword(password) == null ||  !(userMemory.checkPassword(password).equals(username))) {
             throw new UnauthorizedException();
         } else {
