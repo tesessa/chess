@@ -1,4 +1,4 @@
-package serviceTests;
+package dataAccessTests;
 
 import dataAccess.*;
 import model.GameData;
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.*;
 import java.util.HashSet;
 import java.sql.SQLException;
 
-public class ServiceSQLDaoTests {
+public class dataAccessTests {
     private static MySqlUserDataAccess userMemory;
     private static MySqlAuthDataAccess authMemory;
     private static MySqlGameDataAccess gameMemory;
