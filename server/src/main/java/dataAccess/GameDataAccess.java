@@ -13,7 +13,7 @@ public interface GameDataAccess {
 
     int createGame(String gameName) throws DataAccessException;
 
-    void updateGame(GameData game, String username, ChessGame.TeamColor color);
+    void updateGame(GameData game, String username, ChessGame.TeamColor color) throws DataAccessException;
 
     HashSet<GameInformation> listGames() throws DataAccessException;
 }
