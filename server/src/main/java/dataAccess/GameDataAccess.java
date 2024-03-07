@@ -9,9 +9,9 @@ import java.util.HashSet;
 public interface GameDataAccess {
     void clear();
 
-    GameData getGame(int gameID);
+    GameData getGame(int gameID) throws DataAccessException;
 
-    int createGame(String gameName);
+    int createGame(String gameName) throws DataAccessException;
 
     void updateGame(GameData game, String username, ChessGame.TeamColor color);
 
