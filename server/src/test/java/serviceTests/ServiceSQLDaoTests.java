@@ -4,17 +4,8 @@ import dataAccess.*;
 import model.GameData;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import service.GameService;
-import service.UserService;
-import ExceptionClasses.AlreadyTakenException;
-import ExceptionClasses.BadRequestException;
-import ExceptionClasses.UnauthorizedException;
-import Result.CreateGameResult;
-import Result.ErrorResult;
 import Result.GameInformation;
-import Result.RegisterResult;
 import chess.ChessGame;
-import dataAccess.*;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.*;
@@ -220,18 +211,34 @@ public class ServiceSQLDaoTests {
     }
 
     @Test
-    public void goodListGames() {
-        
+    public void goodListGames() throws DataAccessException {
+        HashSet<GameInformation> expected = new HashSet<GameInformation>();
+        gameMemory.createGame("game1");
+        gameMemory.createGame("game2");
+        gameMemory.createGame("game3");
+        gameMemory.createGame("game4");
+        expected.add(new GameInformation(1, null, null, "game1"));
+        expected.add(new GameInformation(2, null, null, "game2"));
+        expected.add(new GameInformation(3, null, null, "game3"));
+        expected.add(new GameInformation(4, null, null, "game4"));
+        HashSet<GameInformation> actual = gameMemory.listGames();
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
-    public void badListGames() {
-
+    public void badListGames() throws DataAccessException {
+        HashSet<GameInformation> expected = new HashSet<GameInformation>();
+        HashSet<GameInformation> emptyList = gameMemory.listGames();
+        Assertions.assertEquals(expected, emptyList);
     }
 
     @Test
-    public void clearGame() {
-
+    public void clearGame() throws DataAccessException {
+        goodListGames();
+        gameMemory.clear();
+        HashSet<GameInformation> expected = new HashSet<GameInformation>();
+        HashSet<GameInformation> actual = gameMemory.listGames();
+        Assertions.assertEquals(expected, actual);
     }
 }
 
