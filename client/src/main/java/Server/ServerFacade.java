@@ -1,6 +1,10 @@
 package Server;
 
+import ExceptionClasses.AlreadyTakenException;
+import ExceptionClasses.BadRequestException;
 import ExceptionClasses.ResponseException;
+import ExceptionClasses.UnauthorizedException;
+import Request.LoginRequest;
 import com.google.gson.Gson;
 
 import java.io.*;
@@ -21,6 +25,16 @@ public class ServerFacade {
         return this.makeRequest("POST", path, data, RegisterResult.class);
     }
 
+    public RegisterResult login(LoginRequest data) throws IOException {
+        var path = "/session";
+        return this.makeRequest("POST", path, data, RegisterResult.class);
+    }
+
+    public void clear() throws IOException {
+        var path = "/db";
+        makeRequest("DELETE", path, null, null);
+    }
+
     private <T> T makeRequest(String method, String path, Object request, Class<T> resopnseClass) throws IOException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
@@ -34,7 +48,7 @@ public class ServerFacade {
             throwIfNotSuccessful(http);
             return readBody(http, resopnseClass);
         } catch (Exception ex) {
-            throw new IOException();
+            throw new IOException(ex.getMessage());
         }
     }
 
@@ -47,10 +61,18 @@ public class ServerFacade {
         }
     }
 
-    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException {
+    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, ResponseException, BadRequestException, UnauthorizedException, AlreadyTakenException {
         var status = http.getResponseCode();
         if(!isSuccessful(status)) {
-            throw new ResponseException(status, "failure: " + status);
+            if(status == 400) {
+                throw new BadRequestException();
+            } else if (status == 401) {
+                throw new UnauthorizedException();
+            } else if (status == 403) {
+                throw new AlreadyTakenException();
+            } else {
+                throw new ResponseException(status, "failure: " + status);
+            }
         }
     }
 

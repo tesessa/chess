@@ -1,10 +1,9 @@
 package ui;
 import java.util.Scanner;
-public class Repl {
-    private final PreloginUI client;
-
-    public Repl(String serverUrl) {
-        client = new PreloginUI(serverUrl);
+public class PreLoginRepl {
+    private final Client client;
+    public PreLoginRepl(String serverUrl) {
+        client = new Client(serverUrl);
     }
 
     public void run() {
@@ -14,6 +13,10 @@ public class Repl {
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while(!result.equals("quit")) {
+            if(client.getClientStatus() == 1) {
+                
+                break;
+            }
             printPrompt();
             String line = scanner.nextLine();
 
