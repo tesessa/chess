@@ -101,13 +101,19 @@ public class Client {
         return result.toString();
     }
 
-    public String joinGame(String... params) throws ResponseException, UnauthorizedException, IOException, BadRequestException {
+    public String joinGame(String... params) throws ResponseException, UnauthorizedException, IOException, BadRequestException, NumberFormatException {
         assertSignedIn();
         if(params.length == 1) {
             return joinObserver(params);
         }
         if(params.length == 2) {
-            int gameID = Integer.parseInt(params[0]);
+            int gameID;
+            try {
+                gameID = Integer.parseInt(params[0]);
+            } catch (NumberFormatException ex) {
+                throw new ResponseException(400, "You need to put in a valid game ID \nExpected <gameID> <WHITE>|<BLACK>|<empty>");
+            }
+            //int gameID = Integer.parseInt(params[0]);
             String color = params[1].toUpperCase();
             if(!color.equals("WHITE") && !color.equals("BLACK")) {
                 throw new BadRequestException("Expected <gameID> <WHITE>|<BLACK>|<empty>");
@@ -119,6 +125,7 @@ public class Client {
                  join = new JoinGameRequest(ChessGame.TeamColor.BLACK, gameID);
             }
             server.joinGame(join, authToken);
+            clientStatus = 2;
             return String.format("You joined game %d as %s on team %s", gameID, username, color);
         }
         throw new ResponseException(400, "Expected <gameID> <WHITE>|<BLACK>|<empty>");
