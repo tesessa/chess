@@ -18,6 +18,13 @@ public class PostLoginRepl {
                 preLogin.run();
                 break;
             }
+            if (client.getClientStatus() == 2) {
+                GamePlayRepl gamePlay = new GamePlayRepl(client);
+                EscapeSequences print = new EscapeSequences();
+                print.printBoards();
+                gamePlay.run();
+                break;
+            }
             printPrompt();
             String line = scanner.nextLine();
 

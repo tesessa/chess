@@ -157,6 +157,10 @@ public class Client {
         return  clientStatus;
     }
 
+    public void setClientStatus(int status) {
+        clientStatus = status;
+    }
+
     public String getServerUrl() {
         return serverUrl;
     }
