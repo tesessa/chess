@@ -2,7 +2,6 @@ package ui;
 import java.io.IOException;
 import java.util.Arrays;
 
-import ExceptionClasses.AlreadyTakenException;
 import ExceptionClasses.BadRequestException;
 import ExceptionClasses.ResponseException;
 import ExceptionClasses.UnauthorizedException;
@@ -14,7 +13,6 @@ import Result.ListGameResult;
 import Result.RegisterResult;
 import Server.ServerFacade;
 import chess.ChessGame;
-import chess.ChessPiece;
 import com.google.gson.Gson;
 import model.UserData;
 
@@ -69,13 +67,13 @@ public class Client {
 
     public String login(String... params) throws IOException, ResponseException {
         if (params.length == 2) {
-            var username = params[0];
+            var user = params[0];
             var password = params[1];
-            LoginRequest data = new LoginRequest(username, password);
+            LoginRequest data = new LoginRequest(user, password);
             RegisterResult result = server.login(data);
             authToken = result.authToken();
-            clientStatus = 1;
             username = result.username();
+            clientStatus = 1;
             return String.format("You signed in as %s " , result.username());
         }
         throw new ResponseException(400, "Expected: <username> <password>");
@@ -106,16 +104,16 @@ public class Client {
     public String joinGame(String... params) throws ResponseException, UnauthorizedException, IOException, BadRequestException {
         assertSignedIn();
         if(params.length == 1) {
-            joinObserver(params);
+            return joinObserver(params);
         }
         if(params.length == 2) {
-            int gameID = Integer.valueOf(params[0]);
+            int gameID = Integer.parseInt(params[0]);
             String color = params[1].toUpperCase();
-            if(color != "WHITE" && color != "BLACK") {
+            if(!color.equals("WHITE") && !color.equals("BLACK")) {
                 throw new BadRequestException("Expected <gameID> <WHITE>|<BLACK>|<empty>");
             }
             JoinGameRequest join;
-            if(color == "WHITE") {
+            if(color.equals("WHITE")) {
                  join = new JoinGameRequest(ChessGame.TeamColor.WHITE, gameID);
             } else {
                  join = new JoinGameRequest(ChessGame.TeamColor.BLACK, gameID);
@@ -123,13 +121,13 @@ public class Client {
             server.joinGame(join, authToken);
             return String.format("You joined game %d as %s on team %s", gameID, username, color);
         }
-        throw new BadRequestException("Expected <gameID> <WHITE>|<BLACK>|<empty>");
+        throw new ResponseException(400, "Expected <gameID> <WHITE>|<BLACK>|<empty>");
     }
 
     public String joinObserver(String... params) throws ResponseException, UnauthorizedException, IOException {
         assertSignedIn();
         if(params.length == 1) {
-            int gameID = Integer.valueOf(params[0]);
+            int gameID = Integer.parseInt(params[0]);
             JoinGameRequest join = new JoinGameRequest(null, gameID);
             server.joinGame(join, authToken);
             clientStatus = 2;
