@@ -13,6 +13,7 @@ import Result.CreateGameResult;
 import Result.ListGameResult;
 import Result.RegisterResult;
 import Server.ServerFacade;
+import chess.ChessPiece;
 import com.google.gson.Gson;
 import model.UserData;
 
@@ -101,8 +102,19 @@ public class Client {
         return result.toString();
     }
 
-    public String joinGame(String... params) throws ResponseException {
-        return "";   
+    public String joinGame(String... params) throws ResponseException, UnauthorizedException, IOException {
+        assertSignedIn();
+        if(params.length == 1) {
+            joinObserver(params);
+        }
+        if(params.length == 2) {
+            int gameID = Integer.valueOf(params[0]);
+            String color = params[1].toUpperCase();
+            if(color != "WHITE" && color != "BLACK") {
+
+            }
+        }
+        return "";
     }
 
     public String joinObserver(String... params) throws ResponseException, UnauthorizedException, IOException {
@@ -111,6 +123,7 @@ public class Client {
             int gameID = Integer.valueOf(params[0]);
             JoinGameRequest join = new JoinGameRequest(null, gameID);
             server.joinGame(join, authToken);
+            clientStatus = 2;
             return String.format("%s joined game %d as an observer", username, gameID);
         }
         throw new ResponseException(400, "Expected <gameID>");
