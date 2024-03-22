@@ -13,6 +13,7 @@ import Result.CreateGameResult;
 import Result.ListGameResult;
 import Result.RegisterResult;
 import Server.ServerFacade;
+import chess.ChessGame;
 import chess.ChessPiece;
 import com.google.gson.Gson;
 import model.UserData;
@@ -31,7 +32,7 @@ public class Client {
         this.serverUrl = serverUrl;
     }
 
-    public String eval(String input) throws IOException, UnauthorizedException {
+    public String eval(String input) throws IOException, UnauthorizedException, BadRequestException {
         try {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
@@ -102,7 +103,7 @@ public class Client {
         return result.toString();
     }
 
-    public String joinGame(String... params) throws ResponseException, UnauthorizedException, IOException {
+    public String joinGame(String... params) throws ResponseException, UnauthorizedException, IOException, BadRequestException {
         assertSignedIn();
         if(params.length == 1) {
             joinObserver(params);
@@ -111,10 +112,18 @@ public class Client {
             int gameID = Integer.valueOf(params[0]);
             String color = params[1].toUpperCase();
             if(color != "WHITE" && color != "BLACK") {
-
+                throw new BadRequestException("Expected <gameID> <WHITE>|<BLACK>|<empty>");
             }
+            JoinGameRequest join;
+            if(color == "WHITE") {
+                 join = new JoinGameRequest(ChessGame.TeamColor.WHITE, gameID);
+            } else {
+                 join = new JoinGameRequest(ChessGame.TeamColor.BLACK, gameID);
+            }
+            server.joinGame(join, authToken);
+            return String.format("You joined game %d as %s on team %s", gameID, username, color);
         }
-        return "";
+        throw new BadRequestException("Expected <gameID> <WHITE>|<BLACK>|<empty>");
     }
 
     public String joinObserver(String... params) throws ResponseException, UnauthorizedException, IOException {
