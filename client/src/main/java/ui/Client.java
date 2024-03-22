@@ -59,6 +59,7 @@ public class Client {
             var email = params[2];
             UserData data = new UserData(username, password, email);
             RegisterResult res = server.register(data);
+            login(username, password);
             return String.format("You registered as %s " , res.username());
 
         }
