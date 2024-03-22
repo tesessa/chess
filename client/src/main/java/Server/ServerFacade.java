@@ -4,6 +4,7 @@ import ExceptionClasses.AlreadyTakenException;
 import ExceptionClasses.BadRequestException;
 import ExceptionClasses.ResponseException;
 import ExceptionClasses.UnauthorizedException;
+import Request.CreateGameRequest;
 import Request.LoginRequest;
 import com.google.gson.Gson;
 
@@ -22,20 +23,25 @@ public class ServerFacade {
 
     public RegisterResult register(UserData data) throws IOException {
         var path = "/user";
-        return this.makeRequest("POST", path, data, RegisterResult.class);
+        return this.makeRequest("POST", path, data, null, RegisterResult.class);
     }
 
     public RegisterResult login(LoginRequest data) throws IOException {
         var path = "/session";
-        return this.makeRequest("POST", path, data, RegisterResult.class);
+        return this.makeRequest("POST", path, data, null, RegisterResult.class);
+    }
+
+    public CreateGameResult createGame(CreateGameRequest data, String authToken) throws IOException {
+        var path = "/game";
+        return this.makeRequest("POST", path, data, authToken, CreateGameResult.class);
     }
 
     public void clear() throws IOException {
         var path = "/db";
-        makeRequest("DELETE", path, null, null);
+        makeRequest("DELETE", path, null, null, null);
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> resopnseClass) throws IOException {
+    private <T> T makeRequest(String method, String path, Object request, Object header, Class<T> resopnseClass) throws IOException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
@@ -43,12 +49,15 @@ public class ServerFacade {
             http.setDoOutput(true);
 
             http.addRequestProperty("Content-Type", "application/json");
+            if(header != null) {
+                http.addRequestProperty("authorization", String.valueOf(header));
+            }
             http.connect();
             writeBody(request, http);
             throwIfNotSuccessful(http);
             return readBody(http, resopnseClass);
         } catch (Exception ex) {
-            throw new IOException(ex.getMessage());
+           throw new IOException(ex.getMessage());
         }
     }
 

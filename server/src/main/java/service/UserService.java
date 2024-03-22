@@ -33,7 +33,10 @@ public class UserService {
             }
     }
 
-    public RegisterResult login(String username, String password) throws UnauthorizedException, DataAccessException, SQLException {
+    public RegisterResult login(String username, String password) throws UnauthorizedException, DataAccessException, SQLException, BadRequestException {
+        if(username == null || password == null) {
+            throw new BadRequestException();
+        }
         if(userMemory.getUser(username) == null || userMemory.checkPassword(password, username) == null ||  !(userMemory.checkPassword(password,username).equals(username))) {
             throw new UnauthorizedException();
         } else {

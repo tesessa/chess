@@ -6,7 +6,9 @@ import ExceptionClasses.AlreadyTakenException;
 import ExceptionClasses.BadRequestException;
 import ExceptionClasses.ResponseException;
 import ExceptionClasses.UnauthorizedException;
+import Request.CreateGameRequest;
 import Request.LoginRequest;
+import Result.CreateGameResult;
 import Result.RegisterResult;
 import Server.ServerFacade;
 import model.UserData;
@@ -16,12 +18,14 @@ public class Client {
     private final String serverUrl;
     private int clientStatus = 0;
 
+    private String authToken;
+
     public Client(String serverUrl) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
     }
 
-    public String eval(String input) throws IOException {
+    public String eval(String input) throws IOException, UnauthorizedException {
         try {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
@@ -62,14 +66,22 @@ public class Client {
             var password = params[1];
             LoginRequest data = new LoginRequest(username, password);
             RegisterResult result = server.login(data);
+            authToken = result.authToken();
             clientStatus = 1;
             return String.format("You signed in as %s " , result.username());
         }
         throw new ResponseException(400, "Expected: <username> <password>");
     }
 
-    public String createGame(String... params) throws ResponseException {
-       return "";
+    public String createGame(String... params) throws ResponseException, IOException, UnauthorizedException {
+        assertSignedIn();
+        if(params.length == 1) {
+            var gameName = params[0];
+            CreateGameRequest data = new CreateGameRequest(gameName);
+            CreateGameResult result = server.createGame(data, authToken);
+            return String.format("You created %s game with ID %d ", gameName, result.gameID());
+        }
+       throw new ResponseException(400, "Expected: <gameName>");
     }
 
     public String list() throws ResponseException {
@@ -85,6 +97,7 @@ public class Client {
     }
 
     public String logout() {
+        clientStatus = 0;
         return "";
     }
 
@@ -111,6 +124,13 @@ public class Client {
                 help - with possible commands
                 """;
     }
+
+    public void assertSignedIn() throws UnauthorizedException {
+        if(clientStatus == 0) {
+            throw new UnauthorizedException();
+        }
+    }
+
 
     //register
     //login

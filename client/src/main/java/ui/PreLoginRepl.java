@@ -7,14 +7,15 @@ public class PreLoginRepl {
     }
 
     public void run() {
-        System.out.println(" Welcome to Chess, Register to start ");
+        System.out.println(" Welcome to Chess, Type help to get started ");
         //System.out.print(client.help());
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while(!result.equals("quit")) {
             if(client.getClientStatus() == 1) {
-                
+                PostLoginRepl login = new PostLoginRepl(client);
+                login.run();
                 break;
             }
             printPrompt();

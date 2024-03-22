@@ -93,7 +93,7 @@ public class Server {
        return new Gson().toJson(u);
     }
 
-    private Object login(Request req, Response res) throws DataAccessException, SQLException {
+    private Object login(Request req, Response res) throws DataAccessException, SQLException, BadRequestException {
        RegisterResult u;
        ErrorResult error;
        try {

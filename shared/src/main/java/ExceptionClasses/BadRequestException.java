@@ -5,7 +5,7 @@ public class BadRequestException extends Exception {
     private final int statusCode;
    public BadRequestException() {
 
-       super("Error: bad request");
+       super("400 Error: bad request");
        statusCode = 400;
     }
 

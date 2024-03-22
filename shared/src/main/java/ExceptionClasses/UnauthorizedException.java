@@ -4,7 +4,7 @@ public class UnauthorizedException extends Exception {
 
     private final int statusCode;
     public UnauthorizedException() {
-        super("Error: unauthorized");
+        super("401 Error: unauthorized");
         statusCode = 401;
     }
 

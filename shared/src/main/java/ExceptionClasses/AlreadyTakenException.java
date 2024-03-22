@@ -3,7 +3,7 @@ package ExceptionClasses;
 public class AlreadyTakenException extends Exception {
     final int statusCode;
     public AlreadyTakenException() {
-        super("Error: already taken");
+        super("403 Error: already taken");
         statusCode = 403;
     }
 
