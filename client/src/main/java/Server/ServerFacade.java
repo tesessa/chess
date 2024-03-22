@@ -5,7 +5,9 @@ import ExceptionClasses.BadRequestException;
 import ExceptionClasses.ResponseException;
 import ExceptionClasses.UnauthorizedException;
 import Request.CreateGameRequest;
+import Request.JoinGameRequest;
 import Request.LoginRequest;
+import Request.LogoutRequest;
 import com.google.gson.Gson;
 
 import java.io.*;
@@ -31,9 +33,25 @@ public class ServerFacade {
         return this.makeRequest("POST", path, data, null, RegisterResult.class);
     }
 
+    public void logout(String authToken) throws IOException {
+        var path = "/session";
+        this.makeRequest("DELETE", path, null, authToken, null);
+    }
+
     public CreateGameResult createGame(CreateGameRequest data, String authToken) throws IOException {
         var path = "/game";
         return this.makeRequest("POST", path, data, authToken, CreateGameResult.class);
+    }
+
+
+    public void joinGame(JoinGameRequest data, String authToken) throws IOException {
+        var path = "/game";
+        this.makeRequest("PUT", path, data, authToken, null);
+    }
+
+    public ListGameResult listGame(String authToken) throws IOException {
+        var path = "/game";
+        return this.makeRequest("GET", path, null, authToken, ListGameResult.class);
     }
 
     public void clear() throws IOException {

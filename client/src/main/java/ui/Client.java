@@ -7,10 +7,13 @@ import ExceptionClasses.BadRequestException;
 import ExceptionClasses.ResponseException;
 import ExceptionClasses.UnauthorizedException;
 import Request.CreateGameRequest;
+import Request.JoinGameRequest;
 import Request.LoginRequest;
 import Result.CreateGameResult;
+import Result.ListGameResult;
 import Result.RegisterResult;
 import Server.ServerFacade;
+import com.google.gson.Gson;
 import model.UserData;
 
 public class Client {
@@ -19,6 +22,8 @@ public class Client {
     private int clientStatus = 0;
 
     private String authToken;
+
+    private String username;
 
     public Client(String serverUrl) {
         server = new ServerFacade(serverUrl);
@@ -68,6 +73,7 @@ public class Client {
             RegisterResult result = server.login(data);
             authToken = result.authToken();
             clientStatus = 1;
+            username = result.username();
             return String.format("You signed in as %s " , result.username());
         }
         throw new ResponseException(400, "Expected: <username> <password>");
@@ -84,25 +90,48 @@ public class Client {
        throw new ResponseException(400, "Expected: <gameName>");
     }
 
-    public String list() throws ResponseException {
-        return "";
+    public String list() throws ResponseException, UnauthorizedException, IOException {
+        assertSignedIn();
+        ListGameResult games = server.listGame(authToken);
+        var result = new StringBuilder();
+        var gson = new Gson();
+        for (var game : games.games()) {
+            result.append(gson.toJson(game)).append('\n');
+        }
+        return result.toString();
     }
 
     public String joinGame(String... params) throws ResponseException {
-        return "";
+        return "";   
     }
 
-    public String joinObserver(String... params) throws ResponseException {
-        return "";
+    public String joinObserver(String... params) throws ResponseException, UnauthorizedException, IOException {
+        assertSignedIn();
+        if(params.length == 1) {
+            int gameID = Integer.valueOf(params[0]);
+            JoinGameRequest join = new JoinGameRequest(null, gameID);
+            server.joinGame(join, authToken);
+            return String.format("%s joined game %d as an observer", username, gameID);
+        }
+        throw new ResponseException(400, "Expected <gameID>");
     }
 
-    public String logout() {
+    public String logout() throws UnauthorizedException, IOException {
+        assertSignedIn();
+        server.logout(authToken);
+        String result = String.format("You logged out as %s", username);
+        username = null;
+        authToken = null;
         clientStatus = 0;
-        return "";
+        return result;
     }
 
     public int getClientStatus() {
         return  clientStatus;
+    }
+
+    public String getServerUrl() {
+        return serverUrl;
     }
 
     public String help() {

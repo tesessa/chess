@@ -13,6 +13,11 @@ public class PostLoginRepl {
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while(!result.equals("quit")) {
+            if(client.getClientStatus() == 0) {
+                PreLoginRepl preLogin = new PreLoginRepl(client.getServerUrl());
+                preLogin.run();
+                break;
+            }
             printPrompt();
             String line = scanner.nextLine();
 
