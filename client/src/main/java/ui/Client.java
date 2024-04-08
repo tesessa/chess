@@ -177,6 +177,15 @@ public class Client {
                     quit - playing chess
                     help - with possible commands
                     """;
+        } else if (clientStatus == 2) {
+            return """
+                    redraw - redraws the chessboard
+                    leave - leave the game
+                    move - makes a move for a piece
+                    resign - forfeit game and game is over
+                    legal - moves you can make
+                    help - with possible commands
+                    """;
         }
         return """
                 register <USERNAME> <PASSWORD> <EMAIL> - to create an account

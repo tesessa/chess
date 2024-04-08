@@ -1,5 +1,10 @@
 package ui;
 
+import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessPiece;
+import chess.ChessPosition;
+
 import java.io.PrintStream;
 
 /**
@@ -71,23 +76,91 @@ public class EscapeSequences {
 
     public static void main(String[] args) {
         var out = new PrintStream(System.out, true);
+        ChessGame game = new ChessGame();
+        ChessBoard board = game.getBoard();
+
+        board.resetBoard();
+        String[][] arr1 = convertBoard(board);
+       // String[][] arr2 = convertBoardBlack(board);
         out.print(ERASE_SCREEN);
        // out.println(SET_BG_COLOR_RED);
         out.print(SET_TEXT_BOLD);
-        drawBoard2(out);
+        drawBoard1(out, board, arr1);
         out.print(SET_BG_COLOR_BLACK);
         out.println(EMPTY.repeat(12));
-        drawBoard1(out);
+        drawBoard2(out, board, arr1);
         //drawRow1(out);
     }
     public static void printBoards() {
         var out = new PrintStream(System.out, true);
-        drawBoard2(out);
-        drawBoard1(out);
+      //  ChessGame game = new ChessGame(
+       // drawBoard2(out,);
+        //drawBoard1(out);
     }
     public static String moveCursorToLocation(int x, int y) { return UNICODE_ESCAPE + "[" + y + ";" + x + "H"; }
 
-    public static void drawBoard1(PrintStream out) {
+
+    //public static ChessBoard chessBoardBlack(ChessBoard board) {
+        
+   // }
+    public static String[][] convertBoardBlack(ChessBoard board) {
+        String arr [][] = new String[8][8];
+        for(int i = 1; i < 9; i++) {
+            for(int j = 1; j < 9; j++) {
+                ChessPosition position = new ChessPosition(i,j);
+                ChessPiece piece = board.getPiece(position);
+                if(piece != null) {
+                    ChessPiece.PieceType type = piece.getPieceType();
+                    if(piece.getPieceType() == ChessPiece.PieceType.BISHOP) {
+                        arr[8-i][8-j] = " B ";
+                    } else if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+                        arr[8-i][8-j] = " K ";
+                    } else if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                        arr[8-i][8-j] = " N ";
+                    } else if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+                        arr[8-i][8-j] = " P ";
+                    } else if (piece.getPieceType() == ChessPiece.PieceType.QUEEN) {
+                        arr[8-i][8-j] = " Q ";
+                    } else if (piece.getPieceType() == ChessPiece.PieceType.ROOK) {
+                        arr[8-i][8-j] = " R ";
+                    }
+                } else {
+                    arr[8-i][8-j] = "   ";
+                }
+            }
+        }
+        return arr;
+    }
+    public static String[][]  convertBoard(ChessBoard board) {
+        String arr [][] = new String[8][8];
+        for(int i = 1; i < 9; i++) {
+            for(int j = 1; j < 9; j++) {
+                ChessPosition position = new ChessPosition(i,j);
+                ChessPiece piece = board.getPiece(position);
+                if(piece != null) {
+                    ChessPiece.PieceType type = piece.getPieceType();
+                    if(piece.getPieceType() == ChessPiece.PieceType.BISHOP) {
+                        arr[i-1][j-1] = " B ";
+                    } else if (piece.getPieceType() == ChessPiece.PieceType.KING) {
+                        arr[i-1][j-1] = " K ";
+                    } else if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
+                        arr[i-1][j-1] = " N ";
+                    } else if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+                        arr[i-1][j-1] = " P ";
+                    } else if (piece.getPieceType() == ChessPiece.PieceType.QUEEN) {
+                        arr[i-1][j-1] = " Q ";
+                    } else if (piece.getPieceType() == ChessPiece.PieceType.ROOK) {
+                        arr[i-1][j-1] = " R ";
+                    }
+                } else {
+                    arr[i-1][j-1] = "   ";
+                }
+            }
+        }
+        return arr;
+    }
+
+  /*  public static void drawBoard1(PrintStream out) {
         String horizontalBoard1[] = {" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
         String verticalBoard1[] = {" 8 ", " 7 ", " 6 ", " 5 ", " 4 ", " 3 ", " 2 ", " 1 "};
         String rowOutside[] = {" R "," N "," B "," K "," Q "," B "," N "," R "};
@@ -101,6 +174,8 @@ public class EscapeSequences {
         drawRowOdd(out, rowOutside, 1);
         out.print(SET_TEXT_COLOR_BLACK);
         drawBorders(out, horizontalBoard1);
+        out.print(SET_BG_COLOR_DARK_GREY);
+        out.print(SET_TEXT_COLOR_GREEN);
         //drawBorders(out, horizontalBoard1, verticalBoard1, rowOutside, rowPawns);
     }
 
@@ -116,6 +191,26 @@ public class EscapeSequences {
         drawRows(out, verticalBoard2);
         drawRowEven(out, rowPawns, 7);
         drawRowOdd(out, rowOutside, 8);
+        out.print(SET_TEXT_COLOR_BLACK);
+        drawBorders(out, horizontalBoard2);
+    }*/
+
+    public static void drawBoard1(PrintStream out, ChessBoard board, String[][] arr) {
+        String horizontalBoard1[] = {" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
+        String verticalBoard1[] = {" 8 ", " 7 ", " 6 ", " 5 ", " 4 ", " 3 ", " 2 ", " 1 "};
+        out.print(SET_TEXT_COLOR_BLACK);
+        drawBorders(out, horizontalBoard1);
+        drawRows(out, verticalBoard1, board, arr);
+        out.print(SET_TEXT_COLOR_BLACK);
+        drawBorders(out, horizontalBoard1);
+    }
+
+    public static void drawBoard2(PrintStream out, ChessBoard board, String[][] arr) {
+        String horizontalBoard2[] = {" h ", " g ", " f ", " e ", " d ", " c ", " b ", " a "};
+        String verticalBoard2[] = {" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 "};
+        out.print(SET_TEXT_COLOR_BLACK);
+        drawBorders(out, horizontalBoard2);
+        drawRows(out, verticalBoard2, board, arr);
         out.print(SET_TEXT_COLOR_BLACK);
         drawBorders(out, horizontalBoard2);
     }
@@ -136,44 +231,176 @@ public class EscapeSequences {
         }
     }
 
-    public static void drawRows(PrintStream out, String rows[]) {
-        for(int row = 0; row < EMPTY_BOARD_SIZE; row++) {
-            drawRowOfSquares(out, row, rows);
+    public static void drawRows(PrintStream out, String[] rows, ChessBoard board, String[][] arr) {
+        for(int row = 0; row < BOARD_SIZE_IN_SQUARES; row++) {
+            drawRowOfSquares(out, row, rows, board, arr);
         }
     }
-    public static void drawRowOfSquares(PrintStream out, int row, String rows[]) {
-        String verticalPos = String.valueOf(rows[row+2]);
-        for(int squareRow = 0; squareRow <3; squareRow++) {
+
+    public static void drawRowOfSquaresWhite(PrintStream out, int row, String[] rows, ChessBoard board, String[][] arr) {
+        String verticalPos = String.valueOf(rows[row]);
+        for(int squareRow = 0; squareRow < 3; squareRow++) {
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; boardCol++) {
                 if (boardCol == 0) {
                     out.print(SET_BG_COLOR_LIGHT_GREY);
-                    if(squareRow == 1) {
+                    if (squareRow == 1) {
                         out.print(SET_TEXT_COLOR_BLACK);
                         out.print(EMPTY.repeat(1));
                         out.print(verticalPos);
                         out.print(EMPTY.repeat(1));
                     } else {
+                        /*out.print(EMPTY.repeat(1));
+                        ChessPosition position = new ChessPosition(row+1, boardCol+1);
+                        ChessPiece piece = board.getPiece(position);
+                        if(piece != null) {
+                            ChessGame.TeamColor color = piece.getTeamColor();
+                            if (color == ChessGame.TeamColor.WHITE) {
+                                out.print(SET_TEXT_COLOR_RED);
+                            } else {
+                                out.print(SET_TEXT_COLOR_BLUE);
+                            }
+                        }
+                        out.print(arr[row][boardCol]);
+                        out.print(EMPTY.repeat(1));*/
                         out.print(EMPTY.repeat(3));
                     }
                 }
-                    if (row % 2 == 0) {
-                        if (boardCol % 2 == 0) {
-                            backgroundWhite(out);
-                            out.print(EMPTY.repeat(3));
+                ChessPosition position = new ChessPosition(row+1, boardCol+1);
+                ChessPiece piece = board.getPiece(position);
+                if(piece != null) {
+                    ChessGame.TeamColor color = piece.getTeamColor();
+                    if(color == ChessGame.TeamColor.WHITE) {
+                        out.print(SET_TEXT_COLOR_RED);
+                    } else {
+                        out.print(SET_TEXT_COLOR_BLUE);
+                    }
+                }
+                if (row % 2 == 0) {
+                    if (boardCol % 2 == 0) {
+                        backgroundWhite(out);
+                        if(squareRow == 1) {
+                            out.print(EMPTY.repeat(1));
+                            out.print(arr[row][boardCol]);
+                            out.print(EMPTY.repeat(1));
                         } else {
-                            backgroundBlack(out);
                             out.print(EMPTY.repeat(3));
                         }
                     } else {
-                        if (boardCol % 2 == 0) {
-                            backgroundBlack(out);
-                            out.print(EMPTY.repeat(3));
+                        backgroundBlack(out);
+                        if(squareRow == 1) {
+                            out.print(EMPTY.repeat(1));
+                            out.print(arr[row][boardCol]);
+                            out.print(EMPTY.repeat(1));
                         } else {
-                            backgroundWhite(out);
                             out.print(EMPTY.repeat(3));
                         }
-                  }
+                    }
+                } else {
+                    if (boardCol % 2 == 0) {
+                        backgroundBlack(out);
+                        if(squareRow == 1) {
+                            out.print(EMPTY.repeat(1));
+                            out.print(arr[row][boardCol]);
+                            out.print(EMPTY.repeat(1));
+                        } else {
+                            out.print(EMPTY.repeat(3));
+                        }
+                    } else {
+                        backgroundWhite(out);
+                        if(squareRow == 1) {
+                            out.print(EMPTY.repeat(1));
+                            out.print(arr[row][boardCol]);
+                            out.print(EMPTY.repeat(1));
+                        } else {
+                            out.print(EMPTY.repeat(3));
+                        }
+                    }
+                }
             }
+            out.print(SET_BG_COLOR_LIGHT_GREY);
+            out.println();
+        }
+    }
+    public static void drawRowOfSquares(PrintStream out, int row, String[] rows, ChessBoard board, String[][] arr) {
+        String verticalPos = String.valueOf(rows[row]);
+        for(int squareRow = 0; squareRow < 3; squareRow++) {
+            for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; boardCol++) {
+                if (boardCol == 0) {
+                    out.print(SET_BG_COLOR_LIGHT_GREY);
+                    if (squareRow == 1) {
+                        out.print(SET_TEXT_COLOR_BLACK);
+                        out.print(EMPTY.repeat(1));
+                        out.print(verticalPos);
+                        out.print(EMPTY.repeat(1));
+                    } else {
+                        /*out.print(EMPTY.repeat(1));
+                        ChessPosition position = new ChessPosition(row+1, boardCol+1);
+                        ChessPiece piece = board.getPiece(position);
+                        if(piece != null) {
+                            ChessGame.TeamColor color = piece.getTeamColor();
+                            if (color == ChessGame.TeamColor.WHITE) {
+                                out.print(SET_TEXT_COLOR_RED);
+                            } else {
+                                out.print(SET_TEXT_COLOR_BLUE);
+                            }
+                        }
+                        out.print(arr[row][boardCol]);
+                        out.print(EMPTY.repeat(1));*/
+                        out.print(EMPTY.repeat(3));
+                    }
+                }
+                ChessPosition position = new ChessPosition(row+1, boardCol+1);
+                ChessPiece piece = board.getPiece(position);
+                if(piece != null) {
+                    ChessGame.TeamColor color = piece.getTeamColor();
+                    if(color == ChessGame.TeamColor.WHITE) {
+                        out.print(SET_TEXT_COLOR_RED);
+                    } else {
+                        out.print(SET_TEXT_COLOR_BLUE);
+                    }
+                }
+                if (row % 2 == 0) {
+                    if (boardCol % 2 == 0) {
+                        backgroundWhite(out);
+                        if(squareRow == 1) {
+                            out.print(EMPTY.repeat(1));
+                            out.print(arr[row][boardCol]);
+                            out.print(EMPTY.repeat(1));
+                        } else {
+                            out.print(EMPTY.repeat(3));
+                        }
+                    } else {
+                        backgroundBlack(out);
+                        if(squareRow == 1) {
+                            out.print(EMPTY.repeat(1));
+                            out.print(arr[row][boardCol]);
+                            out.print(EMPTY.repeat(1));
+                        } else {
+                            out.print(EMPTY.repeat(3));
+                        }
+                    }
+                } else {
+                    if (boardCol % 2 == 0) {
+                        backgroundBlack(out);
+                        if(squareRow == 1) {
+                            out.print(EMPTY.repeat(1));
+                            out.print(arr[row][boardCol]);
+                            out.print(EMPTY.repeat(1));
+                        } else {
+                            out.print(EMPTY.repeat(3));
+                        }
+                    } else {
+                        backgroundWhite(out);
+                        if(squareRow == 1) {
+                            out.print(EMPTY.repeat(1));
+                            out.print(arr[row][boardCol]);
+                            out.print(EMPTY.repeat(1));
+                        } else {
+                            out.print(EMPTY.repeat(3));
+                        }
+                    }
+                }
+        }
             out.print(SET_BG_COLOR_LIGHT_GREY);
             out.println();
          }

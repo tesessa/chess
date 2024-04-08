@@ -18,7 +18,7 @@ public class PreLoginRepl {
                 login.run();
                 break;
             }
-            client.setClientStatus(0);
+           // client.setClientStatus(0);
             printPrompt();
             String line = scanner.nextLine();
 
