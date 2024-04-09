@@ -2,6 +2,7 @@ package server;
 import ExceptionClasses.AlreadyTakenException;
 import dataAccess.*;
 import model.*;
+import server.websocket.WebSocketHandler;
 import service.*;
 import spark.*;
 import com.google.gson.Gson;
@@ -21,13 +22,14 @@ public class Server {
     private final UserService uService;
 
     private final GameService gService;
-
+    private final WebSocketHandler webSocketHandler;
    // private final AuthService aService;
 
 
    // private final GameDataAccess gameData = new
 
    public Server() {
+       webSocketHandler = new WebSocketHandler();
        try {
            userMemory = new MySqlUserDataAccess();
        } catch (DataAccessException e) {
@@ -52,6 +54,7 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
+        Spark.webSocket("/connect", webSocketHandler);
         Spark.post("/user", this::register);
         Spark.delete("/db", this::clear);
         Spark.post("/session", this::login);
