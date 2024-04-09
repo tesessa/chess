@@ -43,6 +43,8 @@ public class Client {
                 case "join" -> joinGame(params);
                 case "observe" -> joinObserver(params);
                 case "logout" -> logout();
+                //case "redraw" -> redraw();
+                //case "leave" -> leave();
                 case "quit" -> "quit";
                 default -> help();
 
@@ -152,6 +154,14 @@ public class Client {
         authToken = null;
         clientStatus = 0;
         return result;
+    }
+
+    public void redraw() {
+
+    }
+
+    public void leave() {
+        setClientStatus(1);
     }
 
     public int getClientStatus() {

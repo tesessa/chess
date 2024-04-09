@@ -1,5 +1,7 @@
 package webSocketMessages.userCommands;
 
+import chess.ChessGame;
+
 import java.util.Objects;
 
 /**
@@ -48,4 +50,5 @@ public class UserGameCommand {
     public int hashCode() {
         return Objects.hash(getCommandType(), getAuthString());
     }
+
 }
