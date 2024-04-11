@@ -11,10 +11,10 @@ import java.util.*;
 public class ChessGame {
 
     private ChessBoard gameBoard = new ChessBoard();
-    private TeamColor turn;
+    private TeamColor turn = TeamColor.WHITE;
 
     public ChessGame() {
-
+        gameBoard.resetBoard();
     }
 
     /**
@@ -67,6 +67,11 @@ public class ChessGame {
         if(getBoard().getPiece(startPosition) == null) {
             return null;
         }
+        if(getTeamTurn() == TeamColor.WHITE) {
+            setTeamTurn(TeamColor.BLACK);
+        } else {
+            setTeamTurn(TeamColor.WHITE);
+        }
         if(isInCheck(team)) {
             Collection<ChessMove> temp;
             temp = (HashSet<ChessMove>) piece.pieceMoves(getBoard(), startPosition);
@@ -102,6 +107,9 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        if(getBoard().getPiece(move.getStartPosition()) == null) {
+            throw new InvalidMoveException("either piece is null or it is not the teams turn");
+        }
         Collection<ChessMove> validMovesList = validMoves(move.getStartPosition());
         if(validMovesList == null) {
             throw new InvalidMoveException("either piece is null or it is not the teams turn");

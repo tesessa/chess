@@ -60,4 +60,8 @@ public class MemoryGameDataAccess implements GameDataAccess {
         games.add(newData);
         printGames.add(newList);
     }
+
+    public void updateBoard(GameData data) {
+
+    }
 }

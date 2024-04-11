@@ -47,13 +47,13 @@ public class WebSocketSessions {
     }
 
 
-    public void broadcast(String excludeAuthToken, String message, int gameID) throws IOException {
+    public void broadcast(String excludeAuthToken, ServerMessage message, int gameID) throws IOException {
         HashMap<String, Session> users = sessions.get(gameID);
         for(var auth : users.keySet()) {
             if(!auth.equals(excludeAuthToken)) {
-                Notification notify = new Notification(message);
-                ServerMessage serverMessage = notify;
-                users.get(auth).getRemote().sendString(new Gson().toJson(serverMessage));
+               // Notification notify = new Notification(message);
+               // ServerMessage serverMessage = notify;
+                users.get(auth).getRemote().sendString(new Gson().toJson(message));
             }
         }
     }

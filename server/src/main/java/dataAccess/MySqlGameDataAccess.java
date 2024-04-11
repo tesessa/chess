@@ -59,6 +59,12 @@ public class MySqlGameDataAccess implements GameDataAccess {
         executeUpdate(statement, username, new Gson().toJson(chessGame), game.gameID());
     }
 
+    public void updateBoard(GameData game) throws DataAccessException {
+        ChessGame chessGame = game.game();
+        var statement = "UPDATE game SET json=? WHERE gameID=?";
+        executeUpdate(statement, new Gson().toJson(chessGame), game.gameID());
+    }
+
     public HashSet<GameInformation> listGames() throws DataAccessException {
         var result = new HashSet<GameInformation>();
         try(var conn = DatabaseManager.getConnection()) {

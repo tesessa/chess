@@ -1,6 +1,6 @@
 package server.websocket;
 import ExceptionClasses.AlreadyTakenException;
-import chess.ChessGame;
+import chess.*;
 import com.google.gson.Gson;
 import com.mysql.cj.jdbc.ConnectionGroupManager;
 import dataAccess.*;
@@ -11,10 +11,9 @@ import org.eclipse.jetty.websocket.api.annotations.*;
 import org.eclipse.jetty.websocket.client.io.ConnectionManager;
 import webSocketMessages.serverMessages.Error;
 import webSocketMessages.serverMessages.LoadGame;
+import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
-import webSocketMessages.userCommands.JoinObserver;
-import webSocketMessages.userCommands.JoinPlayer;
-import webSocketMessages.userCommands.UserGameCommand;
+import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -52,6 +51,14 @@ public class WebSocketHandler {
                 JoinObserver observer = new Gson().fromJson(message, JoinObserver.class);
                 joinObserver(observer.getGameID(), user.getAuthString(), session);
             }
+            case MAKE_MOVE -> {
+                MakeMove move = new Gson().fromJson(message, MakeMove.class);
+                makeMove(move.getGameID(), move.getMove(), user.getAuthString(), session);
+            }
+            case RESIGN -> {
+                Resign resign = new Gson().fromJson(message, Resign.class);
+
+            }
         }
     }
 
@@ -82,7 +89,8 @@ public class WebSocketHandler {
         }
         sessions.add(gameID, authToken, session);
         var message = String.format("%s joined game %d as color %s", username, gameID, playerColor);
-        sessions.broadcast(authToken, message, gameID);
+        Notification notify = new Notification(message);
+        sessions.broadcast(authToken, notify, gameID);
         LoadGame load = new LoadGame(d.game());
         // ServerMessage serverMessage = load;
         sessions.sendMessage(gameID, load, authToken);
@@ -94,9 +102,58 @@ public class WebSocketHandler {
         GameData d = gameData.getGame(gameID);
         sessions.add(gameID, authToken, session);
         var message = String.format("%s join game %d as observer", a.username(), gameID);
-        sessions.broadcast(authToken, message, gameID);
+        Notification notify = new Notification(message);
+        sessions.broadcast(authToken, notify, gameID);
         LoadGame load = new LoadGame(d.game());
         sessions.sendMessage(gameID, load, authToken);
+    }
+
+    private void makeMove(int gameID, ChessMove move, String authToken, Session session) throws DataAccessException, SQLException, IOException {
+        testValues(gameID, authToken,session);
+        AuthData a = authData.getAuth(authToken);
+        GameData g = gameData.getGame(gameID);
+        ChessGame.TeamColor playerColor;
+        if(a.username().equals(g.whiteUsername())) {
+            playerColor = ChessGame.TeamColor.WHITE;
+        } else if (a.username().equals(g.blackUsername())) {
+            playerColor = ChessGame.TeamColor.BLACK;
+        } else {
+            playerColor = null;
+        }
+        ChessGame game = g.game();
+        ChessBoard preMove = game.getBoard();
+        System.out.println(move);
+        ChessPiece pieceMove = preMove.getPiece(move.getStartPosition());
+        ChessPiece.PieceType type = pieceMove.getPieceType();
+        ChessGame.TeamColor color = pieceMove.getTeamColor();
+        if(playerColor == null) {
+            Error error = new Error("You can't move pieces as observer");
+            session.getRemote().sendString(new Gson().toJson(error));
+            return;
+        }
+        if(!String.valueOf(playerColor).equals(String.valueOf(color))) {
+            Error error = new Error("You can't move an opponents piece");
+            session.getRemote().sendString(new Gson().toJson(error));
+            return;
+        }
+        try {
+            game.makeMove(move);
+        } catch(InvalidMoveException e) {
+            Error error = new Error("Invalid move");
+            session.getRemote().sendString(new Gson().toJson(error));
+            return;
+        }
+        GameData updated = new GameData(gameID, g.whiteUsername(), g.blackUsername(), g.gameName(), game);
+        gameData.updateBoard(updated);
+        LoadGame load = new LoadGame(game);
+        sessions.broadcast(authToken, load, gameID);
+        sessions.sendMessage(gameID, load, authToken);
+        ChessPosition start = move.getStartPosition();
+        ChessPosition end = move.getEndPosition();
+        var message = String.format("%s piece on team %s moved from %s to %s", String.valueOf(type),
+                String.valueOf(color), String.valueOf(start), String.valueOf(end));
+        Notification notify = new Notification(message);
+        sessions.broadcast(authToken, notify, gameID);
     }
 
     private void testValues(int gameID, String authToken, Session session) throws DataAccessException, SQLException, IOException {
