@@ -8,6 +8,7 @@ import Request.CreateGameRequest;
 import Request.JoinGameRequest;
 import Request.LoginRequest;
 import Request.LogoutRequest;
+import WebSocket.WebSocketFacade;
 import com.google.gson.Gson;
 
 import java.io.*;
@@ -18,6 +19,7 @@ import model.*;
 import Result.*;
 public class ServerFacade {
     private final String serverUrl;
+
 
     public ServerFacade(String url) {
         serverUrl = url;
@@ -44,9 +46,11 @@ public class ServerFacade {
     }
 
 
-    public void joinGame(JoinGameRequest data, String authToken) throws IOException {
+    public void joinGame(JoinGameRequest data, String authToken) throws IOException, ResponseException {
         var path = "/game";
         this.makeRequest("PUT", path, data, authToken, null);
+        WebSocketFacade ws = new WebSocketFacade(serverUrl);
+        ws.joinPlayer(authToken, data.gameID(), data.playerColor());
     }
 
     public ListGameResult listGame(String authToken) throws IOException {

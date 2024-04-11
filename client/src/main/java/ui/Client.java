@@ -12,6 +12,7 @@ import Result.CreateGameResult;
 import Result.ListGameResult;
 import Result.RegisterResult;
 import Server.ServerFacade;
+import WebSocket.WebSocketFacade;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.UserData;
@@ -20,6 +21,7 @@ public class Client {
     private final ServerFacade server;
     private final String serverUrl;
     private int clientStatus = 0;
+    private WebSocketFacade ws;
 
     private String authToken;
 
@@ -122,10 +124,13 @@ public class Client {
                 throw new BadRequestException("Expected <gameID> <WHITE>|<BLACK>|<empty>");
             }
             JoinGameRequest join;
+           // ws = new WebSocketFacade(serverUrl);
             if(color.equals("WHITE")) {
                  join = new JoinGameRequest(ChessGame.TeamColor.WHITE, gameID);
+                // ws.joinGame(username,authToken,gameID, ChessGame.TeamColor.WHITE);
             } else {
                  join = new JoinGameRequest(ChessGame.TeamColor.BLACK, gameID);
+                // ws.joinGame(username,authToken,gameID, ChessGame.TeamColor.BLACK);
             }
             server.joinGame(join, authToken);
             clientStatus = 2;

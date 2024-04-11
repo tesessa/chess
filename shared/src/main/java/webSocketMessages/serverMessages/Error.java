@@ -8,4 +8,8 @@ public class Error extends ServerMessage {
         super(ServerMessageType.ERROR);
         this.errorMessage = "Error " + errorMessage;
     }
+
+    public String toString() {
+        return errorMessage;
+    }
 }

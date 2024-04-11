@@ -13,4 +13,13 @@ public class JoinPlayer extends UserGameCommand {
         this.gameID = gameID;
         this.color = color;
     }
+
+    public int getGameID() {
+        return gameID;
+    }
+
+    public String toString() {
+        String msg = String.format("%s joined game %d as color %s", authToken,gameID, color);
+        return msg;
+    }
 }
