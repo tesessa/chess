@@ -56,42 +56,32 @@ public class WebSocketHandler {
     }
 
 
-    private void joinPlayer(int gameID, String color, String authToken, Session session) throws IOException, DataAccessException, SQLException {
+    private void joinPlayer(int gameID, ChessGame.TeamColor playerColor, String authToken, Session session) throws IOException, DataAccessException, SQLException {
         AuthData auth = authData.getAuth(authToken);
-       // testValues(gameID, authToken, session);
+        testValues(gameID, authToken, session);
         String username = auth.username();
         GameData d = gameData.getGame(gameID);
-        System.out.println(color);
-       // testColor(gameID, color, authToken, session);
-       /* if(color == null) {
-            System.out.println("color null");
+        System.out.println("Original username " + username + " gameData White Username "
+                 + d.whiteUsername() + " gameData black username " + d.blackUsername());
+        if(d.game() == null) {
+            System.out.println("true");
+        }
+        if(playerColor == null) {
             Error error = new Error("No color");
             session.getRemote().sendString(new Gson().toJson(error));
             return;
-        }*/
-      /*  if(color == ChessGame.TeamColor.WHITE && d.whiteUsername() == username) {
-            System.out.println("White");
-            Error error = new Error("Spot already taken");
-            session.getRemote().sendString(new Gson().toJson(error));
-            return;
-        } else if (color == ChessGame.TeamColor.BLACK && d.blackUsername() == username) {
-            System.out.println("black");
-            Error error = new Error("Spot already taken");
-            session.getRemote().sendString(new Gson().toJson(error));
-            return;
-        }*/
-        System.out.println("Original username " + username + " gameData White Username "
-         + d.whiteUsername() + " gameData black username " + d.blackUsername());
-        sessions.add(gameID, authToken, session);
-        //testColor(gameID, color, authToken, session);
-        String team;
-        if(color == "White") {
-            team = "White";
-        } else {
-            team = "Black";
         }
-           // sessions.add(gameID, authToken, session);
-        var message = String.format("%s joined game %d as color %s", username, gameID, color);
+        if(playerColor == ChessGame.TeamColor.WHITE && !String.valueOf(d.whiteUsername()).equals(username)) {
+            Error error = new Error("Spot already taken");
+            session.getRemote().sendString(new Gson().toJson(error));
+            return;
+        } else if (playerColor == ChessGame.TeamColor.BLACK && !String.valueOf(d.blackUsername()).equals(username)) {
+            Error error = new Error("Spot already taken");
+            session.getRemote().sendString(new Gson().toJson(error));
+            return;
+        }
+        sessions.add(gameID, authToken, session);
+        var message = String.format("%s joined game %d as color %s", username, gameID, playerColor);
         sessions.broadcast(authToken, message, gameID);
         LoadGame load = new LoadGame(d.game());
         // ServerMessage serverMessage = load;
@@ -123,21 +113,6 @@ public class WebSocketHandler {
             session.getRemote().sendString(new Gson().toJson(error));
         }
 
-    }
-
-    private void testColor(int gameID, ChessGame.TeamColor color, String authToken, Session session) throws DataAccessException, SQLException, IOException {
-        GameData g = gameData.getGame(gameID);
-        AuthData a = authData.getAuth(authToken);
-        String username = a.username();
-        if(color == ChessGame.TeamColor.WHITE && g.whiteUsername() != username) {
-            String message = "White team is already taken";
-            Error error = new Error(message);
-            session.getRemote().sendString(new Gson().toJson(error));
-        } else if (color == ChessGame.TeamColor.BLACK && g.blackUsername() != username) {
-            String message = "Black team is already taken";
-            Error error = new Error(message);
-            session.getRemote().sendString(new Gson().toJson(error));
-        }
     }
 
     private void error() {
