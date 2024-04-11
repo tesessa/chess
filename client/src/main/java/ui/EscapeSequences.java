@@ -92,6 +92,28 @@ public class EscapeSequences {
         //drawRow1(out);
     }
 
+    public static void printWhiteBoard(ChessBoard board) {
+        var out = new PrintStream(System.out, true);
+        String[][] arr1 = convertBoard(board);
+        out.print(ERASE_SCREEN);
+        out.print(SET_TEXT_BOLD);
+        drawBoardWhite(out, board, arr1);
+        out.print(SET_TEXT_COLOR_GREEN);
+        out.print(SET_BG_COLOR_DARK_GREY);
+        out.print(ERASE_SCREEN);
+    }
+
+    public static void printBlackBoard(ChessBoard board) {
+        var out = new PrintStream(System.out, true);
+        String[][] arr1 = convertBoard(board);
+        out.print(ERASE_SCREEN);
+        out.print(SET_TEXT_BOLD);
+        drawBoardBlack(out, board, arr1);
+        out.print(SET_TEXT_COLOR_GREEN);
+        out.print(SET_BG_COLOR_DARK_GREY);
+        out.print(ERASE_SCREEN);
+    }
+
 
     public static void printBoards() {
         var out = new PrintStream(System.out, true);

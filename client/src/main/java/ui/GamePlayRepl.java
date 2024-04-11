@@ -1,9 +1,12 @@
 package ui;
 
+import WebSocket.WebSocketFacade;
+
 import java.util.Scanner;
 
 public class GamePlayRepl {
     private final Client client;
+
     public GamePlayRepl(Client client) {
         this.client = client;
     }
@@ -11,6 +14,7 @@ public class GamePlayRepl {
     public void run() {
         Scanner scanner = new Scanner(System.in);
         var result = "";
+
         while(!result.equals("quit")) {
 
             printPrompt();

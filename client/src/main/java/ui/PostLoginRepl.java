@@ -20,8 +20,8 @@ public class PostLoginRepl {
             }
             if (client.getClientStatus() == 2) {
                 GamePlayRepl gamePlay = new GamePlayRepl(client);
-                EscapeSequences print = new EscapeSequences();
-                print.printBoards();
+                //EscapeSequences print = new EscapeSequences();
+               // print.printBoards();
                 gamePlay.run();
                 break;
             }

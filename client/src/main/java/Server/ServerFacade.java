@@ -49,8 +49,8 @@ public class ServerFacade {
     public void joinGame(JoinGameRequest data, String authToken) throws IOException, ResponseException {
         var path = "/game";
         this.makeRequest("PUT", path, data, authToken, null);
-        WebSocketFacade ws = new WebSocketFacade(serverUrl);
-        ws.joinPlayer(authToken, data.gameID(), data.playerColor());
+        //WebSocketFacade ws = new WebSocketFacade(serverUrl);
+        //ws.joinPlayer(authToken, data.gameID(), data.playerColor());
     }
 
     public ListGameResult listGame(String authToken) throws IOException {
