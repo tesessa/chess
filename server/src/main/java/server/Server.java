@@ -28,8 +28,12 @@ public class Server {
 
    // private final GameDataAccess gameData = new
 
-   public Server() {
-       webSocketHandler = new WebSocketHandler();
+   public Server()  {
+       try {
+           webSocketHandler = new WebSocketHandler();
+       } catch(DataAccessException e) {
+           throw new RuntimeException(e);
+       }
        try {
            userMemory = new MySqlUserDataAccess();
        } catch (DataAccessException e) {

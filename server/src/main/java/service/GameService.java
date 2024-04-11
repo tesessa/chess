@@ -79,4 +79,10 @@ public class GameService {
             ErrorResult clear = new ErrorResult("{}");
             return clear;
     }
+
+    public void joinPlayer() {
+
+    }
+
+
 }
