@@ -61,6 +61,7 @@ public class WebSocketHandler {
             }
             case LEAVE -> {
                 Leave leaveGame = new Gson().fromJson(message, Leave.class);
+                leave(leaveGame.getGameID(), user.getAuthString(), session);
             }
         }
     }
@@ -186,6 +187,25 @@ public class WebSocketHandler {
         Notification notify = new Notification(message);
         sessions.broadcast(authToken, notify, gameID);
         sessions.sendMessage(gameID, notify, authToken);
+    }
+
+    private void leave(int gameID, String authToken, Session session) throws DataAccessException, SQLException, IOException {
+        AuthData a = authData.getAuth(authToken);
+        String username = a.username();
+        GameData g = gameData.getGame(gameID);
+        GameData updated;
+        if(g.whiteUsername().equals(username)) {
+            updated = new GameData(g.gameID(), null, g.blackUsername(), g.gameName(),g.game());
+        } else if(g.blackUsername().equals(username)) {
+            updated = new GameData(g.gameID(), g.whiteUsername(), null, g.gameName(), g.game());
+        } else {
+            updated = g;
+        }
+        gameData.updateBoard(updated);
+        var message = String.format("%s left game %d", username, gameID);
+        Notification notify = new Notification(message);
+        sessions.broadcast(authToken, notify,gameID);
+        sessions.removeSessionFromGame(gameID, authToken, session);
     }
 
     private void testValues(int gameID, String authToken, Session session) throws DataAccessException, SQLException, IOException {

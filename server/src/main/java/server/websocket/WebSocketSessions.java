@@ -53,7 +53,9 @@ public class WebSocketSessions {
             if(!auth.equals(excludeAuthToken)) {
                // Notification notify = new Notification(message);
                // ServerMessage serverMessage = notify;
-                users.get(auth).getRemote().sendString(new Gson().toJson(message));
+                if(users.get(auth).isOpen()) {
+                    users.get(auth).getRemote().sendString(new Gson().toJson(message));
+                }
             }
         }
     }
