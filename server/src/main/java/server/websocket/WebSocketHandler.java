@@ -56,8 +56,11 @@ public class WebSocketHandler {
                 makeMove(move.getGameID(), move.getMove(), user.getAuthString(), session);
             }
             case RESIGN -> {
-                Resign resign = new Gson().fromJson(message, Resign.class);
-
+                Resign res = new Gson().fromJson(message, Resign.class);
+                resign(res.getGameID(), user.getAuthString(), session);
+            }
+            case LEAVE -> {
+                Leave leaveGame = new Gson().fromJson(message, Leave.class);
             }
         }
     }
@@ -121,6 +124,11 @@ public class WebSocketHandler {
             playerColor = null;
         }
         ChessGame game = g.game();
+        if(game.getGameOver()) {
+            Error error = new Error("Game is over, no more moves");
+            session.getRemote().sendString(new Gson().toJson(error));
+            return;
+        }
         ChessBoard preMove = game.getBoard();
         System.out.println(move);
         ChessPiece pieceMove = preMove.getPiece(move.getStartPosition());
@@ -154,6 +162,30 @@ public class WebSocketHandler {
                 String.valueOf(color), String.valueOf(start), String.valueOf(end));
         Notification notify = new Notification(message);
         sessions.broadcast(authToken, notify, gameID);
+    }
+
+    private void resign(int gameID, String authToken, Session session) throws DataAccessException, SQLException, IOException {
+        GameData g = gameData.getGame(gameID);
+        AuthData a = authData.getAuth(authToken);
+        String username = a.username();
+        if(!g.whiteUsername().equals(username) && !g.blackUsername().equals(username)) {
+            Error error = new Error("Observer can't resign game");
+            session.getRemote().sendString(new Gson().toJson(error));
+            return;
+        }
+        ChessGame game = g.game();
+        if(game.getGameOver()) {
+            Error error = new Error("Game is already over, you can't resign");
+            session.getRemote().sendString(new Gson().toJson(error));
+            return;
+        }
+        game.setGameOverTrue();
+        GameData updated = new GameData(gameID, g.whiteUsername(), g.blackUsername(), g.gameName(), game);
+        gameData.updateBoard(updated);
+        var message = String.format("%s has resigned game %d, game is over", a.username(), gameID);
+        Notification notify = new Notification(message);
+        sessions.broadcast(authToken, notify, gameID);
+        sessions.sendMessage(gameID, notify, authToken);
     }
 
     private void testValues(int gameID, String authToken, Session session) throws DataAccessException, SQLException, IOException {
