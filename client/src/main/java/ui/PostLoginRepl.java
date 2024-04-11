@@ -1,5 +1,7 @@
 package ui;
 
+import ExceptionClasses.ResponseException;
+
 import java.util.Scanner;
 
 public class PostLoginRepl {
@@ -9,7 +11,7 @@ public class PostLoginRepl {
         this.client = client;
     }
 
-    public void run() {
+    public void run() throws ResponseException  {
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while(!result.equals("quit")) {

@@ -1,12 +1,14 @@
 package ui;
+import ExceptionClasses.ResponseException;
+
 import java.util.Scanner;
 public class PreLoginRepl {
     private final Client client;
-    public PreLoginRepl(String serverUrl) {
+    public PreLoginRepl(String serverUrl) throws ResponseException {
         client = new Client(serverUrl);
     }
 
-    public void run() {
+    public void run() throws ResponseException {
         System.out.println(" Welcome to Chess, Type help to get started ");
         //System.out.print(client.help());
 

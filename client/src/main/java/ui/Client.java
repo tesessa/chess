@@ -37,10 +37,11 @@ public class Client {
 
     private ChessGame.TeamColor playerTeam;
 
-    public Client(String serverUrl) {
+    public Client(String serverUrl) throws ResponseException {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         gameHandler = new GameHandler();
+        //ws = new WebSocketFacade(serverUrl, gameHandler);
     }
 
     public String eval(String input) throws IOException, UnauthorizedException, BadRequestException {
@@ -141,11 +142,9 @@ public class Client {
             if(color.equals("WHITE")) {
                  join = new JoinGameRequest(ChessGame.TeamColor.WHITE, gameID);
                  playerColor = ChessGame.TeamColor.WHITE;
-                // ws.joinGame(username,authToken,gameID, ChessGame.TeamColor.WHITE);
             } else {
                  join = new JoinGameRequest(ChessGame.TeamColor.BLACK, gameID);
                  playerColor = ChessGame.TeamColor.BLACK;
-                // ws.joinGame(username,authToken,gameID, ChessGame.TeamColor.BLACK);
             }
             server.joinGame(join, authToken);
             clientStatus = 2;
@@ -190,6 +189,7 @@ public class Client {
     public String leave() throws ResponseException {
         setClientStatus(1);
         ws.leave(authToken, gameID);
+        ws = null;
         String result = String.format("You left game %d as %s", gameID, username);
         return result;
     }

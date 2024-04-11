@@ -224,18 +224,6 @@ public class WebSocketHandler {
 
     }
 
-    private void error() {
-
-    }
-
-    private void notification() {
-
-    }
-
-    public void sendMessage(int gameID, String message, String authToken) {
-
-    }
-
     //public void broadcastMessage(int gameID, String message) {
       //  var removeList = new ArrayList<WebSocketSessions>();
 

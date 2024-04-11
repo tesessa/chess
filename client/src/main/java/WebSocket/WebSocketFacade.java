@@ -22,10 +22,12 @@ public class WebSocketFacade extends Endpoint {
             this.gameHandler = gameHandler;
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/connect");
+        //    System.out.println("URL: " + url);
+           // System.out.println("URI: " + socketURI);
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
-
+            container.setDefaultMaxSessionIdleTimeout(5 * 60 * 1000);
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                //message from server
                 @Override
@@ -58,6 +60,7 @@ public class WebSocketFacade extends Endpoint {
         try {
             UserGameCommand msg = new UserGameCommand(authToken);
             JoinPlayer join = new JoinPlayer(gameID, color, authToken);
+           // send(new Gson().toJson(join));
             this.session.getBasicRemote().sendText(new Gson().toJson(join));
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
