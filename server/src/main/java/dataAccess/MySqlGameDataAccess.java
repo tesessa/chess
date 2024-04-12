@@ -17,8 +17,8 @@ public class MySqlGameDataAccess implements GameDataAccess {
 
     SQL s;
     public MySqlGameDataAccess() throws DataAccessException {
-        configureDatabase();
         s = new SQL();
+        s.configureDatabase(createGames);
     }
 
     public GameData getGame(int gameID) throws DataAccessException {
@@ -123,17 +123,4 @@ public class MySqlGameDataAccess implements GameDataAccess {
             """
     };
 
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try(var conn = DatabaseManager.getConnection()) {
-            for (var game : createGames) {
-                try (var preparedStatement = conn.prepareStatement(game)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch(SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-
-    }
 }

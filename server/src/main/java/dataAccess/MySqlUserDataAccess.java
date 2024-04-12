@@ -15,8 +15,8 @@ public class MySqlUserDataAccess implements UserDataAccess {
 
     private SQL s;
     public MySqlUserDataAccess() throws DataAccessException {
-        configureDatabase();
         s = new SQL();
+        s.configureDatabase(createUsers);
     }
 
     public void createUser(String username, String password, String email) throws DataAccessException {
@@ -84,18 +84,4 @@ public class MySqlUserDataAccess implements UserDataAccess {
             );
             """
     };
-
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try(var conn = DatabaseManager.getConnection()) {
-            for (var user : createUsers) {
-                try (var preparedStatement = conn.prepareStatement(user)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch(SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-
-    }
 }

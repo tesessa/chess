@@ -48,12 +48,6 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-
-    public void send(String msg) throws Exception {
-        this.session.getBasicRemote().sendText(msg);
-    }
-
-
     public void joinPlayer(String authToken, int gameID, ChessGame.TeamColor color) throws ResponseException {
         try {
             playerColor = color;

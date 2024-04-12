@@ -29,4 +29,18 @@ public class SQL  {
             throw new DataAccessException(String.format("unable to update database: %s %s", statement, e.getMessage()));
         }
     }
+
+    public void configureDatabase(String[] create) throws DataAccessException {
+        DatabaseManager.createDatabase();
+        try(var conn = DatabaseManager.getConnection()) {
+            for (var user : create) {
+                try (var preparedStatement = conn.prepareStatement(user)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        } catch(SQLException ex) {
+            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
+        }
+
+    }
 }

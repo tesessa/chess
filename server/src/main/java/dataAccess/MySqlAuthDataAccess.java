@@ -12,8 +12,8 @@ import static java.sql.Types.NULL;
 public class MySqlAuthDataAccess implements AuthDataAccess {
     SQL s;
     public MySqlAuthDataAccess() throws DataAccessException {
-        configureDatabase();
         s = new SQL();
+        s.configureDatabase(createAuths);
     }
     public AuthData createAuth(String username) throws DataAccessException {
         String authToken = UUID.randomUUID().toString();
@@ -56,7 +56,7 @@ public class MySqlAuthDataAccess implements AuthDataAccess {
         AuthData auth = new AuthData(authToken, username);
         return auth;
     }
-   
+
     private final String[] createAuths = {
             """
             CREATE TABLE IF NOT EXISTS auth (
@@ -66,20 +66,5 @@ public class MySqlAuthDataAccess implements AuthDataAccess {
             );
             """
     };
-
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try(var conn = DatabaseManager.getConnection()) {
-            for (var auth : createAuths) {
-                try (var preparedStatement = conn.prepareStatement(auth)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch(SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-
-    }
-
 
 }
