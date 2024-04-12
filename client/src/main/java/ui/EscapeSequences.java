@@ -219,17 +219,14 @@ public class EscapeSequences {
             }
         }
     }
-    
+
     public static void drawRowOfSquares(PrintStream out, int row, String[] rows, ChessBoard board, String[][] arr, int[][] legalMoves, boolean black) {
         String verticalPos = String.valueOf(rows[row]);
         for(int squareRow = 0; squareRow < 3; squareRow++) {
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; boardCol++) {
                 String print;
-                if(black) {
-                    print = arr[row][boardCol];
-                } else {
-                    print = arr[7-row][7-boardCol];
-                }
+                if(black) print = arr[row][boardCol];
+                else print = arr[7-row][7-boardCol];
                 if(legalMoves[row][boardCol] == 1) {
                     out.print(SET_BG_COLOR_GREEN);
                 } else if(legalMoves[row][boardCol] == 2) {
@@ -242,49 +239,31 @@ public class EscapeSequences {
                         out.print(EMPTY.repeat(1));
                         out.print(verticalPos);
                         out.print(EMPTY.repeat(1));
-                    } else {
-                        out.print(EMPTY.repeat(3));
-                    }
+                    } else out.print(EMPTY.repeat(3));
                 }
                 ChessPosition position = new ChessPosition(row+1, boardCol+1);
                 ChessPiece piece = board.getPiece(position);
                 if(piece != null) {
                     ChessGame.TeamColor color = piece.getTeamColor();
-                    if(color == ChessGame.TeamColor.WHITE) {
-                        out.print(SET_TEXT_COLOR_BLUE);
-                    } else {
-                        out.print(SET_TEXT_COLOR_RED);
-                    }
+                    if(color == ChessGame.TeamColor.WHITE) out.print(SET_TEXT_COLOR_BLUE);
+                    else out.print(SET_TEXT_COLOR_RED);
                 }
                 if (row % 2 == 0) {
                     if (boardCol % 2 == 0) {
                         backgroundBlack(out);
-                        if(black) {
-                            backgroundWhite(out);
-                        }
-                       // out.print(SET_BG_COLOR_GREEN);
-                        if(legalMoves[row][boardCol] == 1) {
-                            out.print(SET_BG_COLOR_GREEN);
-                        } else if(legalMoves[row][boardCol] == 2) {
-                            out.print(SET_BG_COLOR_YELLOW);
-                        }
+                        if(black) backgroundWhite(out);
+                        if(legalMoves[row][boardCol] == 1) out.print(SET_BG_COLOR_GREEN);
+                        else if(legalMoves[row][boardCol] == 2) out.print(SET_BG_COLOR_YELLOW);
                         if(squareRow == 1) {
                             out.print(EMPTY.repeat(1));
                             out.print(print);
                             out.print(EMPTY.repeat(1));
-                        } else {
-                            out.print(EMPTY.repeat(3));
-                        }
+                        } else out.print(EMPTY.repeat(3));
                     } else {
                         backgroundWhite(out);
-                        if(black) {
-                            backgroundBlack(out);
-                        }
-                        if(legalMoves[row][boardCol] == 1) {
-                            out.print(SET_BG_COLOR_GREEN);
-                        } else if(legalMoves[row][boardCol] == 2) {
-                            out.print(SET_BG_COLOR_YELLOW);
-                        }
+                        if(black) backgroundBlack(out);
+                        if(legalMoves[row][boardCol] == 1) out.print(SET_BG_COLOR_GREEN);
+                        else if(legalMoves[row][boardCol] == 2) out.print(SET_BG_COLOR_YELLOW);
                         if(squareRow == 1) {
                             out.print(EMPTY.repeat(1));
                             out.print(print);
@@ -296,26 +275,17 @@ public class EscapeSequences {
                 } else if(row%2 == 1 ){
                     if (boardCol % 2 == 0) {
                         backgroundWhite(out);
-                        if(black) {
-                            backgroundBlack(out);
-                        }
-                        if(legalMoves[row][boardCol] == 1) {
-                            out.print(SET_BG_COLOR_GREEN);
-                        } else if(legalMoves[row][boardCol] == 2) {
-                            out.print(SET_BG_COLOR_YELLOW);
-                        }
+                        if(black) backgroundBlack(out);
+                        if(legalMoves[row][boardCol] == 1) out.print(SET_BG_COLOR_GREEN);
+                        else if(legalMoves[row][boardCol] == 2) out.print(SET_BG_COLOR_YELLOW);
                         if(squareRow == 1) {
                             out.print(EMPTY.repeat(1));
                             out.print(print);
                             out.print(EMPTY.repeat(1));
-                        } else {
-                            out.print(EMPTY.repeat(3));
-                        }
+                        } else out.print(EMPTY.repeat(3));
                     } else {
                         backgroundBlack(out);
-                        if(black) {
-                            backgroundWhite(out);
-                        }
+                        if(black) backgroundWhite(out);
                         if(legalMoves[row][boardCol] == 1) {
                             out.print(SET_BG_COLOR_GREEN);
                         } else if(legalMoves[row][boardCol] == 2) {
