@@ -12,22 +12,25 @@ public class GameHandler {
        System.out.println(message);
     }
 
-    public void updateGame(LoadGame load) {
+    public void updateGame(LoadGame load, ChessGame.TeamColor color) {
+       // System.out.println("Load game");
         game = load.getGame();
+      //  drawBoard(color);
     }
 
     public ChessGame getGame() {
         return game;
     }
     public void drawBoard(ChessGame.TeamColor playerColor) {
+        int [][] arr = new int[8][8];
         EscapeSequences draw = new EscapeSequences();
         ChessBoard board = game.getBoard();
         if(playerColor == ChessGame.TeamColor.WHITE) {
-            draw.printWhiteBoard(board);
+            draw.printWhiteBoard(board, arr);
         } else if (playerColor == ChessGame.TeamColor.BLACK) {
-            draw.printBlackBoard(board);
+            draw.printBlackBoard(board, arr);
         } else {
-            draw.printWhiteBoard(board);
+            draw.printWhiteBoard(board, arr);
         }
     }
 }

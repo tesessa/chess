@@ -16,14 +16,13 @@ import java.net.URISyntaxException;
 public class WebSocketFacade extends Endpoint {
     Session session;
     GameHandler gameHandler;
+    ChessGame.TeamColor playerColor = ChessGame.TeamColor.WHITE;
 
     public WebSocketFacade(String url, GameHandler gameHandler) throws ResponseException {
         try {
             this.gameHandler = gameHandler;
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/connect");
-        //    System.out.println("URL: " + url);
-           // System.out.println("URI: " + socketURI);
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
@@ -33,10 +32,10 @@ public class WebSocketFacade extends Endpoint {
                 @Override
                 public void onMessage(String message) {
                     ServerMessage s = new Gson().fromJson(message, ServerMessage.class);
-                    gameHandler.printMessage(message);
+                    //gameHandler.printMessage(message);
                     if(s.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
                         LoadGame load = new Gson().fromJson(message, LoadGame.class);
-                        gameHandler.updateGame(load);
+                        gameHandler.updateGame(load, playerColor);
                     }
                 }
             });
@@ -58,7 +57,8 @@ public class WebSocketFacade extends Endpoint {
 
     public void joinPlayer(String authToken, int gameID, ChessGame.TeamColor color) throws ResponseException {
         try {
-            UserGameCommand msg = new UserGameCommand(authToken);
+            playerColor = color;
+            //UserGameCommand msg = new UserGameCommand(authToken);
             JoinPlayer join = new JoinPlayer(gameID, color, authToken);
            // send(new Gson().toJson(join));
             this.session.getBasicRemote().sendText(new Gson().toJson(join));
@@ -89,6 +89,7 @@ public class WebSocketFacade extends Endpoint {
         try {
             MakeMove newMove = new MakeMove(gameID, move, authToken);
             this.session.getBasicRemote().sendText(new Gson().toJson(newMove));
+
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
         }

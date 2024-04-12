@@ -182,6 +182,7 @@ public class Client {
     }
 
     public String redraw() {
+        System.out.println("Redraw");
         gameHandler.drawBoard(playerTeam);
         return "";
     }
@@ -202,6 +203,7 @@ public class Client {
             ChessPosition end = convertInputPosition(endPosition);
             ChessMove movePiece = new ChessMove(start, end, null);
             ws.makeMove(gameID, movePiece, authToken);
+           // ws = new WebSocketFacade(serverUrl, gameHandler);
             redraw();
             return "";
         }
@@ -214,21 +216,21 @@ public class Client {
         if(position.length() != 2) {
             throw new ResponseException(500, "You need to input column and row");
         }
-        if(position.charAt(0) == 'H') {
+        if(position.charAt(0) == 'A') {
             col = 1;
-        } else if(position.charAt(0) == 'G') {
-            col = 2;
-        } else if(position.charAt(0) == 'F') {
-            col = 3;
-        } else if(position.charAt(0) == 'E') {
-            col = 4;
-        } else if(position.charAt(0) == 'D') {
-            col = 5;
-        } else if(position.charAt(0) == 'C') {
-            col = 6;
         } else if(position.charAt(0) == 'B') {
+            col = 2;
+        } else if(position.charAt(0) == 'C') {
+            col = 3;
+        } else if(position.charAt(0) == 'D') {
+            col = 4;
+        } else if(position.charAt(0) == 'E') {
+            col = 5;
+        } else if(position.charAt(0) == 'F') {
+            col = 6;
+        } else if(position.charAt(0) == 'G') {
             col = 7;
-        } else if(position.charAt(0) == 'A') {
+        } else if(position.charAt(0) == 'H') {
             col = 8;
         } else {
             throw new ResponseException(500, "Not a valid column value");
