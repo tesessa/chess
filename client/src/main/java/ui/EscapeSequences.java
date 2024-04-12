@@ -326,7 +326,4 @@ public class EscapeSequences {
         out.print(SET_BG_COLOR_BLACK);
     }
 
-    private static void backgroundRed(PrintStream out) {
-        out.print(SET_BG_COLOR_RED);
-    }
 }

@@ -66,10 +66,6 @@ public class WebSocketFacade extends Endpoint {
         this.session.getBasicRemote().sendText(msg);
     }
 
-    public void loadGame(ChessGame game) {
-        gameHandler.updateGame(game);
-        gameHandler.drawBoard(playerColor);
-    }
 
     public void joinPlayer(String authToken, int gameID, ChessGame.TeamColor color) throws ResponseException {
         try {

@@ -8,9 +8,6 @@ import webSocketMessages.serverMessages.LoadGame;
 public class GameHandler {
 
     ChessGame game = new ChessGame();
-    public void printMessage(String message) {
-       System.out.println(message);
-    }
 
     public void updateGame(ChessGame newGame) {
        // System.out.println("Load game");

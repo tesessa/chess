@@ -226,9 +226,4 @@ public class WebSocketHandler {
 
     }
 
-    //public void broadcastMessage(int gameID, String message) {
-      //  var removeList = new ArrayList<WebSocketSessions>();
-
-    //}
-
 }

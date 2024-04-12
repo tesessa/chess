@@ -30,13 +30,6 @@ public class WebSocketSessions {
         Integer id = Integer.valueOf(gameID);
         HashMap<String, Session> temp = sessions.get(id);
         temp.remove(authToken);
-        //sessions.remove()
-        //connections.remove(authToken);
-    }
-
-    public HashMap<String, Session> getSessionsForGame(int gameID) {
-        Integer id = Integer.valueOf(gameID);
-        return sessions.get(id);
     }
 
     public void sendMessage(int gameID, ServerMessage message, String authToken) throws IOException {
