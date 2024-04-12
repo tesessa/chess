@@ -15,8 +15,10 @@ import static java.sql.Types.NULL;
 
 public class MySqlGameDataAccess implements GameDataAccess {
 
+    SQL s;
     public MySqlGameDataAccess() throws DataAccessException {
         configureDatabase();
+        s = new SQL();
     }
 
     public GameData getGame(int gameID) throws DataAccessException {
@@ -40,7 +42,7 @@ public class MySqlGameDataAccess implements GameDataAccess {
         var statement = "INSERT INTO game (gameName,json) VALUES (?,?)";
         ChessGame game = new ChessGame();
         var json = new Gson().toJson(game);
-        var id = executeUpdate(statement, gameName, json);
+        var id = s.executeUpdate(statement, gameName, json);
         return id;
     }
 
@@ -56,13 +58,13 @@ public class MySqlGameDataAccess implements GameDataAccess {
         } else {
             return;
         }
-        executeUpdate(statement, username, new Gson().toJson(chessGame), game.gameID());
+        s.executeUpdate(statement, username, new Gson().toJson(chessGame), game.gameID());
     }
 
     public void updateBoard(GameData game) throws DataAccessException {
         ChessGame chessGame = game.game();
         var statement = "UPDATE game SET json=? WHERE gameID=?";
-        executeUpdate(statement, new Gson().toJson(chessGame), game.gameID());
+        s.executeUpdate(statement, new Gson().toJson(chessGame), game.gameID());
     }
 
     public HashSet<GameInformation> listGames() throws DataAccessException {
@@ -84,7 +86,7 @@ public class MySqlGameDataAccess implements GameDataAccess {
 
     public void clear() throws DataAccessException {
         var statement = "TRUNCATE game";
-        executeUpdate(statement);
+        s.executeUpdate(statement);
     }
 
     private GameData readGame(ResultSet rs) throws SQLException {
@@ -107,29 +109,6 @@ public class MySqlGameDataAccess implements GameDataAccess {
         return gameInfo;
     }
 
-    private int executeUpdate(String statement, Object... params) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)) {
-                for(var i = 0; i < params.length; i++) {
-                    var param = params[i];
-                    if(param instanceof String p) ps.setString(i+1, p);
-                    else if (param instanceof  Integer p) ps.setInt(i+1, p);
-                    else if (param instanceof  ChessGame p) ps.setString(i+1, p.toString());
-                    else if (param == null) ps.setNull(i+1, NULL);
-                }
-                ps.executeUpdate();
-
-                var rs = ps.getGeneratedKeys();
-                if(rs.next()) {
-                    return rs.getInt(1);
-                }
-
-                return 0;
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException(String.format("unable to update database: %s %s", statement, e.getMessage()));
-        }
-    }
 
     private final String[] createGames = {
             """
