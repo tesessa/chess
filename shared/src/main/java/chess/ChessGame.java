@@ -62,7 +62,7 @@ public class ChessGame {
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
-    public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+    public Collection<ChessMove> validMoves(ChessPosition startPosition) throws InvalidMoveException {
         HashSet<ChessMove> moves = new HashSet<ChessMove>();
         ChessPiece piece = getBoard().getPiece(startPosition);
         TeamColor team = getBoard().getPiece(startPosition).getTeamColor();
@@ -71,17 +71,17 @@ public class ChessGame {
         if(getTeamTurn() == null) {
             setTeamTurn(team);
         }
-       if(getTeamTurn() != team) {
-            return null;
-       }
+      // if(getTeamTurn() != team) {
+        //    throw new InvalidMoveException("It isn't your turn");
+       //}
         if(getBoard().getPiece(startPosition) == null) {
             return null;
         }
-        if(getTeamTurn() == TeamColor.WHITE) {
+       /* if(getTeamTurn() == TeamColor.WHITE) {
             setTeamTurn(TeamColor.BLACK);
         } else {
             setTeamTurn(TeamColor.WHITE);
-        }
+        }*/
         if(isInCheck(team)) {
             Collection<ChessMove> temp;
             temp = (HashSet<ChessMove>) piece.pieceMoves(getBoard(), startPosition);
@@ -120,6 +120,10 @@ public class ChessGame {
         if(getBoard().getPiece(move.getStartPosition()) == null) {
             throw new InvalidMoveException("either piece is null or it is not the teams turn");
         }
+        ChessGame.TeamColor color  = getBoard().getPiece(move.getStartPosition()).getTeamColor();
+        if(getTeamTurn() != color) {
+            throw new InvalidMoveException("It isn't your turn");
+        }
         Collection<ChessMove> validMovesList = validMoves(move.getStartPosition());
         if(validMovesList == null) {
             throw new InvalidMoveException("either piece is null or it is not the teams turn");
@@ -154,6 +158,11 @@ public class ChessGame {
             }
             newBoard.addPiece(move.getStartPosition(), null);
             setBoard(newBoard);
+           if(getTeamTurn() == TeamColor.WHITE) {
+               setTeamTurn(TeamColor.BLACK);
+           } else {
+               setTeamTurn(TeamColor.WHITE);
+           }
         }
     }
 

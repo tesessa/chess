@@ -97,8 +97,8 @@ public class WebSocketHandler {
         Notification notify = new Notification(message);
         sessions.broadcast(authToken, notify, gameID);
         LoadGame load = new LoadGame(d.game());
-        // ServerMessage serverMessage = load;
-        sessions.sendMessage(gameID, load, authToken);
+        ServerMessage serverMessage = load;
+        sessions.sendMessage(gameID, serverMessage, authToken);
     }
 
     private void joinObserver(int gameID, String authToken, Session session) throws DataAccessException, SQLException, IOException {
@@ -132,7 +132,7 @@ public class WebSocketHandler {
             return;
         }
         ChessBoard preMove = game.getBoard();
-        System.out.println(move);
+      //  System.out.println(move);
         ChessPiece pieceMove = preMove.getPiece(move.getStartPosition());
         ChessPiece.PieceType type = pieceMove.getPieceType();
         ChessGame.TeamColor color = pieceMove.getTeamColor();
@@ -197,8 +197,10 @@ public class WebSocketHandler {
         GameData g = gameData.getGame(gameID);
         GameData updated;
         if(g.whiteUsername().equals(username)) {
+            System.out.println("Updating list1");
             updated = new GameData(g.gameID(), null, g.blackUsername(), g.gameName(),g.game());
         } else if(g.blackUsername().equals(username)) {
+            System.out.println("Updating list2");
             updated = new GameData(g.gameID(), g.whiteUsername(), null, g.gameName(), g.game());
         } else {
             updated = g;

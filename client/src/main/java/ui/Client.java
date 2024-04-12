@@ -17,34 +17,29 @@ import WebSocket.WebSocketFacade;
 import chess.*;
 import com.google.gson.Gson;
 import model.UserData;
-import webSocketMessages.userCommands.MakeMove;
+import webSocketMessages.serverMessages.ServerMessage;
 
 public class Client {
     private final ServerFacade server;
     private final String serverUrl;
     private int clientStatus = 0;
     private WebSocketFacade ws;
-
-    private GameHandler gameHandler;
-
     private EscapeSequences draw = new EscapeSequences();
-
     private String authToken;
-
     private String username;
-
     private int gameID;
-
     private ChessGame.TeamColor playerTeam;
+    ChessGame game;
+    private EscapeSequences e = new EscapeSequences();
 
     public Client(String serverUrl) throws ResponseException {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
-        gameHandler = new GameHandler();
-        //ws = new WebSocketFacade(serverUrl, gameHandler);
+       // gameHandler g = new GameHandler();
+       // ws = new WebSocketFacade(serverUrl, this);
     }
 
-    public String eval(String input) throws IOException, UnauthorizedException, BadRequestException {
+    public String eval(String input) throws IOException, UnauthorizedException, BadRequestException, InvalidMoveException {
         try {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
@@ -60,6 +55,8 @@ public class Client {
                 case "redraw" -> redraw();
                 case "leave" -> leave();
                 case "move" -> move(params);
+                case "resign" -> resign();
+                case "legal" -> legal(params);
                 case "quit" -> "quit";
                 default -> help();
 
@@ -148,10 +145,10 @@ public class Client {
             }
             server.joinGame(join, authToken);
             clientStatus = 2;
-            ws = new WebSocketFacade(serverUrl, gameHandler);
+            ws = new WebSocketFacade(serverUrl, this);
             ws.joinPlayer(authToken, gameID, playerColor);
             playerTeam = playerColor;
-            redraw();
+            //redraw();
             return String.format("You joined game %d as %s on team %s", gameID, username, color);
         }
         throw new ResponseException(400, "Expected <gameID> <WHITE>|<BLACK>|<empty>");
@@ -164,9 +161,9 @@ public class Client {
             JoinGameRequest join = new JoinGameRequest(null, gameID);
             server.joinGame(join, authToken);
             clientStatus = 2;
-            ws = new WebSocketFacade(serverUrl, gameHandler);
+            ws = new WebSocketFacade(serverUrl, this);
             ws.joinObserver(authToken, gameID);
-            redraw();
+            //redraw();
             return String.format("%s joined game %d as an observer", username, gameID);
         }
         throw new ResponseException(400, "Expected <gameID>");
@@ -184,14 +181,21 @@ public class Client {
 
     public String redraw() {
      //   System.out.println("Redraw");
-        gameHandler.drawBoard(playerTeam);
+        int[][] arr = new int[8][8];
+        //EscapeSequences e = new EscapeSequences();
+        if(playerTeam == ChessGame.TeamColor.BLACK) {
+            e.printBlackBoard(game.getBoard(), arr);
+        } else {
+            e.printWhiteBoard(game.getBoard(),arr);
+        }
+        //e.printWhiteBoard(new ChessBoard(), arr);
         return "";
     }
 
     public String leave() throws ResponseException {
         setClientStatus(1);
         ws.leave(authToken, gameID);
-        ws = null;
+        //ws = null;
         String result = String.format("You left game %d as %s", gameID, username);
         return result;
     }
@@ -202,13 +206,46 @@ public class Client {
             String endPosition = params[1].toUpperCase();
             ChessPosition start = convertInputPosition(startPosition);
             ChessPosition end = convertInputPosition(endPosition);
-            ChessMove movePiece = new ChessMove(start, end, null);
+            ChessPosition startFinal;
+            ChessPosition endFinal;
+            if(playerTeam == ChessGame.TeamColor.BLACK) {
+                 startFinal = new ChessPosition(9 - start.getRow(), start.getColumn());
+                 endFinal = new ChessPosition(9 - end.getRow(), end.getColumn());
+            } else {
+                 startFinal = start;
+                 endFinal = end;
+            }
+            System.out.println(game.toString());
+            System.out.println("Team " + playerTeam + " start position " + startPosition + start + " end position " + endPosition + end);
+            ChessMove movePiece = new ChessMove(startFinal, endFinal, null);
             ws.makeMove(gameID, movePiece, authToken);
-           // ws = new WebSocketFacade(serverUrl, gameHandler);
+            ws = new WebSocketFacade(serverUrl, this);
             redraw();
             return "";
         }
         throw new ResponseException(500, "Expected <start-position> <end-position>");
+    }
+
+    public String resign(String... params) throws ResponseException {
+        ws.resign(gameID, authToken);
+        String result = String.format("You resigned game %d as %s", gameID, username);
+        return result;
+    }
+
+    public String legal(String... params) throws ResponseException, InvalidMoveException {
+        if(params.length == 1) {
+            String p = params[0].toUpperCase();
+            ChessPosition temp = convertInputPosition(p);
+            ChessPosition position;
+            if(playerTeam == ChessGame.TeamColor.WHITE) {
+                position = new ChessPosition(temp.getRow(), 9-temp.getColumn());
+            } else {
+                position = temp;
+            }
+            e.printLegalMoves(game, position, playerTeam);
+            return "";
+        }
+        throw new ResponseException(500, "Expected <POSITION>");
     }
 
     private ChessPosition convertInputPosition(String position) throws ResponseException {
@@ -217,44 +254,34 @@ public class Client {
         if(position.length() != 2) {
             throw new ResponseException(500, "You need to input column and row");
         }
-        if(position.charAt(0) == 'A') {
-            col = 1;
-        } else if(position.charAt(0) == 'B') {
-            col = 2;
-        } else if(position.charAt(0) == 'C') {
-            col = 3;
-        } else if(position.charAt(0) == 'D') {
-            col = 4;
-        } else if(position.charAt(0) == 'E') {
-            col = 5;
-        } else if(position.charAt(0) == 'F') {
-            col = 6;
-        } else if(position.charAt(0) == 'G') {
-            col = 7;
-        } else if(position.charAt(0) == 'H') {
-            col = 8;
-        } else {
+        if(position.charAt(0) == 'A') col = 1; //8
+        else if(position.charAt(0) == 'B') col = 2; //7
+        else if(position.charAt(0) == 'C') col = 3; //6
+        else if(position.charAt(0) == 'D') col = 4; //5
+        else if(position.charAt(0) == 'E') col = 5; //4
+        else if(position.charAt(0) == 'F') col = 6; //3
+        else if(position.charAt(0) == 'G') col = 7; //2
+        else if(position.charAt(0) == 'H') col = 8; //1
+        else {
             throw new ResponseException(500, "Not a valid column value");
         }
-        if(position.charAt(1) == '1') {
-            row = 1;
-        } else if(position.charAt(1) == '2') {
-            row = 2;
-        } else if(position.charAt(1) == '3') {
-            row = 3;
-        } else if(position.charAt(1) == '4') {
-            row = 4;
-        } else if(position.charAt(1) == '5') {
-            row = 5;
-        } else if(position.charAt(1) == '6') {
-            row = 6;
-        } else if(position.charAt(1) == '7') {
-            row = 7;
-        } else if(position.charAt(1) == '8') {
-            row = 8;
-        } else {
+        if(position.charAt(1) == '1') row = 1;
+        else if(position.charAt(1) == '2') row = 2;
+        else if(position.charAt(1) == '3') row = 3;
+        else if(position.charAt(1) == '4') row = 4;
+        else if(position.charAt(1) == '5') row = 5;
+        else if(position.charAt(1) == '6') row = 6;
+        else if(position.charAt(1) == '7') row = 7;
+        else if(position.charAt(1) == '8') row = 8;
+        else {
             throw new ResponseException(500, "Invalid row value");
         }
+        /*ChessPosition chessPosition;
+        if(playerTeam == ChessGame.TeamColor.WHITE) {
+            chessPosition = new ChessPosition(row, col);
+        } else {
+            chessPosition = new ChessPosition(row, col);
+        }*/
         ChessPosition chessPosition = new ChessPosition(row, col);
         return chessPosition;
     }
@@ -305,6 +332,23 @@ public class Client {
         if(clientStatus == 0) {
             throw new UnauthorizedException();
         }
+    }
+
+    public void updateGame(ChessGame newGame) {
+        System.out.println("Hey");
+        game = newGame;
+        redraw();
+
+    }
+
+    public void printMessage(String message, ServerMessage s) {
+        if(s.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION || s.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + message);
+        }
+        if(s.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
+
+        }
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN);
     }
 
 

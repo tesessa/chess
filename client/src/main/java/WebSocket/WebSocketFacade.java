@@ -4,11 +4,15 @@ import ExceptionClasses.ResponseException;
 import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
-import webSocketMessages.serverMessages.Error;
+import ui.Client;
+import ui.EscapeSequences;
 import webSocketMessages.serverMessages.LoadGame;
-import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
+//import org.eclipse.jetty.websocket.api.*;
+//import org.eclipse.jetty.websocket.api.Session;
+//import org.eclipse.jetty.websocket.api.annotations.*;
+//import org.eclipse.jetty.websocket.client.io.ConnectionManager;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -18,11 +22,12 @@ import java.net.URISyntaxException;
 public class WebSocketFacade extends Endpoint {
     Session session;
     GameHandler gameHandler;
-    ChessGame.TeamColor playerColor = ChessGame.TeamColor.WHITE;
+    Client client;
+    //ChessGame.TeamColor playerColor = ChessGame.TeamColor.WHITE;
 
-    public WebSocketFacade(String url, GameHandler gameHandler) throws ResponseException {
+    public WebSocketFacade(String url, Client client) throws ResponseException {
         try {
-            this.gameHandler = gameHandler;
+            this.client = client;
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/connect");
 
@@ -33,9 +38,16 @@ public class WebSocketFacade extends Endpoint {
                //message from server
                 @Override
                 public void onMessage(String message) {
+                    System.out.println(message);
                     ServerMessage s = new Gson().fromJson(message, ServerMessage.class);
-
-
+                    client.printMessage(message, s);
+                    if(s.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
+                        LoadGame l = new Gson().fromJson(message, LoadGame.class);
+                      //  EscapeSequences es = new EscapeSequences();
+                       // int [][] moves = new int[8][8];
+                      //  es.printWhiteBoard(l.getGame().getBoard(), moves);
+                        client.updateGame(l.getGame());
+                    }
                 }
             });
 
@@ -50,10 +62,8 @@ public class WebSocketFacade extends Endpoint {
 
     public void joinPlayer(String authToken, int gameID, ChessGame.TeamColor color) throws ResponseException {
         try {
-            playerColor = color;
-            //UserGameCommand msg = new UserGameCommand(authToken);
+            //playerColor = color;
             JoinPlayer join = new JoinPlayer(gameID, color, authToken);
-           // send(new Gson().toJson(join));
             this.session.getBasicRemote().sendText(new Gson().toJson(join));
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
@@ -83,6 +93,15 @@ public class WebSocketFacade extends Endpoint {
             MakeMove newMove = new MakeMove(gameID, move, authToken);
             this.session.getBasicRemote().sendText(new Gson().toJson(newMove));
 
+        } catch (IOException ex) {
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+    public void resign(int gameID, String authToken) throws ResponseException {
+        try {
+            Resign resign = new Resign(gameID, authToken);
+            this.session.getBasicRemote().sendText(new Gson().toJson(resign));
         } catch (IOException ex) {
             throw new ResponseException(500, ex.getMessage());
         }
