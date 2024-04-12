@@ -82,15 +82,12 @@ public class EscapeSequences {
         int [][] moves = new int[8][8];
         board.resetBoard();
         String[][] arr1 = convertBoard(board);
-       // String[][] arr2 = convertBoardBlack(board);
         out.print(ERASE_SCREEN);
-       // out.println(SET_BG_COLOR_RED);
         out.print(SET_TEXT_BOLD);
         drawBoardWhite(out, board, arr1, moves);
         out.print(SET_BG_COLOR_BLACK);
         out.println(EMPTY.repeat(12));
         drawBoardBlack(out, board, arr1, moves);
-        //drawRow1(out);
     }
 
     public static void printWhiteBoard(ChessBoard board, int[][] moves) {
@@ -115,32 +112,6 @@ public class EscapeSequences {
         out.print(ERASE_SCREEN);
     }
 
-
-    public static void printBoards() {
-        var out = new PrintStream(System.out, true);
-        ChessGame game = new ChessGame();
-        ChessBoard board = game.getBoard();
-        ChessPosition position = new ChessPosition(2,3);
-        printLegalMoves(game, position, ChessGame.TeamColor.WHITE);
-        int [][] moves = new int[8][8];
-        board.resetBoard();
-        String[][] arr1 = convertBoard(board);
-        // String[][] arr2 = convertBoardBlack(board);
-        out.print(ERASE_SCREEN);
-        // out.println(SET_BG_COLOR_RED);
-        out.print(SET_TEXT_BOLD);
-        drawBoardWhite(out, board, arr1, moves);
-        out.print(SET_BG_COLOR_BLACK);
-        out.println(EMPTY.repeat(12));
-        drawBoardBlack(out, board, arr1, moves);
-        out.print(SET_TEXT_COLOR_GREEN);
-        out.print(SET_BG_COLOR_DARK_GREY);
-        out.print(ERASE_SCREEN);
-        //drawRow1(out);
-      //  ChessGame game = new ChessGame(
-       // drawBoard2(out,);
-        //drawBoard1(out);
-    }
 
     public static void printLegalMoves(ChessGame game, ChessPosition position, ChessGame.TeamColor team) {
         HashSet<ChessMove> moves = (HashSet<ChessMove>) game.validMoves(position);
@@ -168,38 +139,6 @@ public class EscapeSequences {
     }
     public static String moveCursorToLocation(int x, int y) { return UNICODE_ESCAPE + "[" + y + ";" + x + "H"; }
 
-
-    //public static ChessBoard chessBoardBlack(ChessBoard board) {
-        
-   // }
-    public static String[][] convertBoardBlack(ChessBoard board) {
-        String arr [][] = new String[8][8];
-        for(int i = 1; i < 9; i++) {
-            for(int j = 1; j < 9; j++) {
-                ChessPosition position = new ChessPosition(i,j);
-                ChessPiece piece = board.getPiece(position);
-                if(piece != null) {
-                    ChessPiece.PieceType type = piece.getPieceType();
-                    if(piece.getPieceType() == ChessPiece.PieceType.BISHOP) {
-                        arr[8-i][8-j] = " B ";
-                    } else if (piece.getPieceType() == ChessPiece.PieceType.KING) {
-                        arr[8-i][8-j] = " K ";
-                    } else if (piece.getPieceType() == ChessPiece.PieceType.KNIGHT) {
-                        arr[8-i][8-j] = " N ";
-                    } else if (piece.getPieceType() == ChessPiece.PieceType.PAWN) {
-                        arr[8-i][8-j] = " P ";
-                    } else if (piece.getPieceType() == ChessPiece.PieceType.QUEEN) {
-                        arr[8-i][8-j] = " Q ";
-                    } else if (piece.getPieceType() == ChessPiece.PieceType.ROOK) {
-                        arr[8-i][8-j] = " R ";
-                    }
-                } else {
-                    arr[8-i][8-j] = "   ";
-                }
-            }
-        }
-        return arr;
-    }
     public static String[][]  convertBoard(ChessBoard board) {
         String arr [][] = new String[8][8];
         for(int i = 1; i < 9; i++) {
@@ -228,41 +167,6 @@ public class EscapeSequences {
         }
         return arr;
     }
-
-  /*  public static void drawBoard1(PrintStream out) {
-        String horizontalBoard1[] = {" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
-        String verticalBoard1[] = {" 8 ", " 7 ", " 6 ", " 5 ", " 4 ", " 3 ", " 2 ", " 1 "};
-        String rowOutside[] = {" R "," N "," B "," K "," Q "," B "," N "," R "};
-        String rowPawns[] = {" p "," p "," p "," p "," p "," p "," p "," p "};
-        out.print(SET_TEXT_COLOR_BLACK);
-        drawBorders(out, horizontalBoard1);
-        drawRowEven(out, rowOutside, 8);
-        drawRowOdd(out, rowPawns, 7);
-        drawRows(out, verticalBoard1);
-        drawRowEven(out, rowPawns, 2);
-        drawRowOdd(out, rowOutside, 1);
-        out.print(SET_TEXT_COLOR_BLACK);
-        drawBorders(out, horizontalBoard1);
-        out.print(SET_BG_COLOR_DARK_GREY);
-        out.print(SET_TEXT_COLOR_GREEN);
-        //drawBorders(out, horizontalBoard1, verticalBoard1, rowOutside, rowPawns);
-    }
-
-    public static void drawBoard2(PrintStream out) {
-        String horizontalBoard2[] = {" h ", " g ", " f ", " e ", " d ", " c ", " b ", " a "};
-        String verticalBoard2[] = {" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 "};
-        String rowOutside[] = {" R "," N "," B "," K "," Q "," B "," N "," R "};
-        String rowPawns[] = {" P "," P "," P "," P "," P "," P "," P "," P "};
-        out.print(SET_TEXT_COLOR_BLACK);
-        drawBorders(out, horizontalBoard2);
-        drawRowEven(out, rowOutside, 1);
-        drawRowOdd(out, rowPawns, 2);
-        drawRows(out, verticalBoard2);
-        drawRowEven(out, rowPawns, 7);
-        drawRowOdd(out, rowOutside, 8);
-        out.print(SET_TEXT_COLOR_BLACK);
-        drawBorders(out, horizontalBoard2);
-    }*/
 
     public static void drawBoardWhite(PrintStream out, ChessBoard board, String[][] arr, int[][] moves) {
         //String horizontalBoard1[] = {" h ", " g ", " f ", " e ", " d ", " c ", " b ", " a "};
@@ -444,19 +348,6 @@ public class EscapeSequences {
                         out.print(verticalPos);
                         out.print(EMPTY.repeat(1));
                     } else {
-                        /*out.print(EMPTY.repeat(1));
-                        ChessPosition position = new ChessPosition(row+1, boardCol+1);
-                        ChessPiece piece = board.getPiece(position);
-                        if(piece != null) {
-                            ChessGame.TeamColor color = piece.getTeamColor();
-                            if (color == ChessGame.TeamColor.WHITE) {
-                                out.print(SET_TEXT_COLOR_RED);
-                            } else {
-                                out.print(SET_TEXT_COLOR_BLUE);
-                            }
-                        }
-                        out.print(arr[row][boardCol]);
-                        out.print(EMPTY.repeat(1));*/
                         out.print(EMPTY.repeat(3));
                     }
                 }
@@ -550,97 +441,7 @@ public class EscapeSequences {
          }
     }
 
-    public static void drawRowEven(PrintStream out, String[] characters, int verticalPos) {
-        String row = " " + String.valueOf(verticalPos) + " ";
-        int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
-        for(int squareRow = 0; squareRow <SQUARE_SIZE_IN_CHARS; squareRow++) {
-            for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; boardCol++) {
-                if(boardCol == 0) {
-                    out.print(SET_BG_COLOR_LIGHT_GREY);
-                    out.print(SET_TEXT_COLOR_BLACK);
-                    if(squareRow == 1) {
-                        out.print(EMPTY.repeat(1));
-                        out.print(row);
-                        out.print(EMPTY.repeat(1));
-                    } else {
-                        out.print(EMPTY.repeat(3));
-                    }
-                }
-                if(verticalPos == 2 || verticalPos == 1) {
-                    out.print(SET_TEXT_COLOR_RED);
-                } else if (verticalPos == 8 || verticalPos == 7) {
-                    out.print(SET_TEXT_COLOR_BLUE);
-                }
-                    if (boardCol % 2 == 0) {
-                        backgroundWhite(out);
-                        if(squareRow == 1) {
-                            out.print(EMPTY.repeat(1));
-                            out.print(characters[boardCol]);
-                            out.print(EMPTY.repeat(1));
-                        } else {
-                            out.print(EMPTY.repeat(3));
-                        }
-                    } else {
-                        backgroundBlack(out);
-                        if(squareRow == 1) {
-                            out.print(EMPTY.repeat(1));
-                            out.print(characters[boardCol]);
-                            out.print(EMPTY.repeat(1));
-                        } else {
-                            out.print(EMPTY.repeat(3));
-                        }
-                    }
-            }
-            out.print(SET_BG_COLOR_LIGHT_GREY);
-            out.println();
-        }
-    }
 
-    public static void drawRowOdd(PrintStream out, String pawns[], int verticalPos) {
-        String row = " " + String.valueOf(verticalPos) + " ";
-        int prefixLength = SQUARE_SIZE_IN_CHARS / 2;
-        for(int squareRow = 0; squareRow <SQUARE_SIZE_IN_CHARS; squareRow++) {
-            for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; boardCol++) {
-                if(boardCol == 0) {
-                    out.print(SET_BG_COLOR_LIGHT_GREY);
-                    out.print(SET_TEXT_COLOR_BLACK);
-                    if(squareRow == 1) {
-                        out.print(EMPTY.repeat(1));
-                        out.print(row);
-                        out.print(EMPTY.repeat(1));
-                    } else {
-                        out.print(EMPTY.repeat(3));
-                    }
-                }
-                if(verticalPos == 1 || verticalPos == 2) {
-                    out.print(SET_TEXT_COLOR_RED);
-                } else if (verticalPos == 7 || verticalPos == 8) {
-                    out.print(SET_TEXT_COLOR_BLUE);
-                }
-                if (boardCol % 2 == 0) {
-                    backgroundBlack(out);
-                    if(squareRow == 1) {
-                        out.print(EMPTY.repeat(1));
-                        out.print(pawns[boardCol]);
-                        out.print(EMPTY.repeat(1));
-                    } else {
-                        out.print(EMPTY.repeat(3));
-                    }
-                } else {
-                    backgroundWhite(out);
-                    if(squareRow == 1) {
-                        out.print(EMPTY.repeat(1));
-                        out.print(pawns[boardCol]);
-                        out.print(EMPTY.repeat(1));
-                    } else {
-                        out.print(EMPTY.repeat(3));
-                    }
-                }
-            }
-            out.print(SET_BG_COLOR_LIGHT_GREY);
-            out.println();
-        }
-    }
     private static void backgroundWhite(PrintStream out) {
         out.print(SET_BG_COLOR_WHITE);
     }
