@@ -4,7 +4,9 @@ import ExceptionClasses.ResponseException;
 import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
+import webSocketMessages.serverMessages.Error;
 import webSocketMessages.serverMessages.LoadGame;
+import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
 
@@ -32,10 +34,20 @@ public class WebSocketFacade extends Endpoint {
                 @Override
                 public void onMessage(String message) {
                     ServerMessage s = new Gson().fromJson(message, ServerMessage.class);
+
                     //gameHandler.printMessage(message);
-                    if(s.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
-                        LoadGame load = new Gson().fromJson(message, LoadGame.class);
-                        gameHandler.updateGame(load, playerColor);
+                    switch(s.getServerMessageType()) {
+                        case LOAD_GAME -> {
+                            LoadGame load = new Gson().fromJson(message, LoadGame.class);
+
+                        }
+                        case ERROR -> {
+                            Error error = new Gson().fromJson(message, Error.class);
+                            System.out.println(error.toString());
+                        }
+                        case NOTIFICATION -> {
+
+                        }
                     }
                 }
             });
@@ -50,9 +62,13 @@ public class WebSocketFacade extends Endpoint {
     }
 
 
-
     public void send(String msg) throws Exception {
         this.session.getBasicRemote().sendText(msg);
+    }
+
+    public void loadGame(ChessGame game) {
+        gameHandler.updateGame(game);
+        gameHandler.drawBoard(playerColor);
     }
 
     public void joinPlayer(String authToken, int gameID, ChessGame.TeamColor color) throws ResponseException {

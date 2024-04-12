@@ -12,9 +12,9 @@ public class GameHandler {
        System.out.println(message);
     }
 
-    public void updateGame(LoadGame load, ChessGame.TeamColor color) {
+    public void updateGame(ChessGame newGame) {
        // System.out.println("Load game");
-        game = load.getGame();
+        game =  newGame;
       //  drawBoard(color);
     }
 

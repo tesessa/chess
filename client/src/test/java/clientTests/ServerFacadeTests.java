@@ -210,7 +210,7 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void goodJoinGame() throws IOException {
+    public void goodJoinGame() throws IOException, ResponseException {
         goodCreateGame();
         goodRegister();
         LoginRequest login1 = new LoginRequest("Tessa", "password");

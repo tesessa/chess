@@ -52,6 +52,7 @@ public class WebSocketHandler {
                 joinObserver(observer.getGameID(), user.getAuthString(), session);
             }
             case MAKE_MOVE -> {
+                System.out.println("In make move");
                 MakeMove move = new Gson().fromJson(message, MakeMove.class);
                 makeMove(move.getGameID(), move.getMove(), user.getAuthString(), session);
             }
@@ -154,6 +155,7 @@ public class WebSocketHandler {
         }
         GameData updated = new GameData(gameID, g.whiteUsername(), g.blackUsername(), g.gameName(), game);
         gameData.updateBoard(updated);
+        System.out.println(updated);
         LoadGame load = new LoadGame(game);
         sessions.broadcast(authToken, load, gameID);
         sessions.sendMessage(gameID, load, authToken);

@@ -166,6 +166,7 @@ public class Client {
             clientStatus = 2;
             ws = new WebSocketFacade(serverUrl, gameHandler);
             ws.joinObserver(authToken, gameID);
+            redraw();
             return String.format("%s joined game %d as an observer", username, gameID);
         }
         throw new ResponseException(400, "Expected <gameID>");
@@ -182,7 +183,7 @@ public class Client {
     }
 
     public String redraw() {
-        System.out.println("Redraw");
+     //   System.out.println("Redraw");
         gameHandler.drawBoard(playerTeam);
         return "";
     }
