@@ -495,7 +495,7 @@ public class ChessGameTests {
 
     @Test
     @DisplayName("Pinned King Causes Stalemate")
-    public void stalemate() {
+    public void stalemate() throws InvalidMoveException {
         var game = getNewGame();
         game.setBoard(loadBoard("""
                 |k| | | | | | | |
@@ -633,7 +633,7 @@ public class ChessGameTests {
     public class ValidMoveTests {
         @Test
         @DisplayName("Check Forces Movement")
-        public void forcedMove() {
+        public void forcedMove() throws InvalidMoveException {
 
             var game = getNewGame();
             game.setBoard(loadBoard("""
@@ -661,7 +661,7 @@ public class ChessGameTests {
 
         @Test
         @DisplayName("Piece Partially Trapped")
-        public void moveIntoCheck() {
+        public void moveIntoCheck() throws InvalidMoveException {
 
             var game = getNewGame();
             game.setBoard(loadBoard("""
@@ -685,7 +685,7 @@ public class ChessGameTests {
 
         @Test
         @DisplayName("Piece Completely Trapped")
-        public void rookPinnedToKing() {
+        public void rookPinnedToKing() throws InvalidMoveException {
 
             var game = getNewGame();
             game.setBoard(loadBoard("""
@@ -707,7 +707,7 @@ public class ChessGameTests {
 
         @Test
         @DisplayName("Pieces Cannot Eliminate Check")
-        public void kingInDanger() {
+        public void kingInDanger() throws InvalidMoveException {
 
             var game = getNewGame();
             game.setBoard(loadBoard("""
@@ -750,7 +750,7 @@ public class ChessGameTests {
 
         @Test
         @DisplayName("King Cannot Move Into Check")
-        public void noPutSelfInDanger() {
+        public void noPutSelfInDanger() throws InvalidMoveException {
 
             var game = getNewGame();
             game.setBoard(loadBoard("""
@@ -773,7 +773,7 @@ public class ChessGameTests {
     }
 
 
-    private void assertMoves(ChessGame game, Set<ChessMove> validMoves, ChessPosition position) {
+    private void assertMoves(ChessGame game, Set<ChessMove> validMoves, ChessPosition position) throws InvalidMoveException {
         var actualMoves = new HashSet<>(game.validMoves(position));
         Assertions.assertEquals(validMoves, actualMoves,
                 "ChessGame validMoves did not return the correct moves");
