@@ -12,7 +12,28 @@ public class ChessBoard {
     private ChessPiece[][] squares = new ChessPiece[8][8];
 
     public ChessBoard() {
+        /*for(int i = 1; i < 9; i++) {
+            for (int j = 1; j < 9; j++) {
+                ChessPosition position = new ChessPosition(i, j);
+                if(i < 5) {
+                    ChessPiece piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
+                    addPiece(position,piece);
+                } else {
+                    ChessPiece piece = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
+                    addPiece(position, piece);
+                }
+            }
+        }*/
         resetBoard();
+        /*ChessPosition position1 = new ChessPosition(5,7);
+        ChessPosition position2 = new ChessPosition(3, 4);
+        ChessPosition position3 = new ChessPosition(4,5);
+        ChessPiece piece3 = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
+        ChessPiece piece1 = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
+        ChessPiece piece2 = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
+        addPiece(position1, piece1);
+        addPiece(position2, piece2);
+        addPiece(position3, piece3);*/
     }
 
     public ChessBoard(ChessBoard board)
@@ -75,9 +96,9 @@ public class ChessBoard {
                         addPiece(piece, knightW);
                     } else if (col == 3 || col == 6) {
                         addPiece(piece, bishopW);
-                    } else if (col == 4) {
-                        addPiece(piece, queenW);
                     } else if (col == 5) {
+                        addPiece(piece, queenW);
+                    } else if (col == 4) {
                         addPiece(piece, kingW);
                     }
                 }
@@ -97,9 +118,9 @@ public class ChessBoard {
                         addPiece(piece, knightB);
                     } else if (col == 3 || col == 6) {
                         addPiece(piece, bishopB);
-                    } else if (col == 4) {
-                        addPiece(piece, queenB);
                     } else if (col == 5) {
+                        addPiece(piece, queenB);
+                    } else if (col == 4) {
                         addPiece(piece, kingB);
                     }
                 }

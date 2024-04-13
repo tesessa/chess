@@ -28,6 +28,8 @@ public class WebSocketHandler {
     private final GameDataAccess gameData;
     private final AuthDataAccess authData;
 
+    private ChessGame.TeamColor player;
+
     public WebSocketHandler() throws DataAccessException {
         gameData = new MySqlGameDataAccess();
         authData = new MySqlAuthDataAccess();
@@ -69,6 +71,7 @@ public class WebSocketHandler {
 
 
     private void joinPlayer(int gameID, ChessGame.TeamColor playerColor, String authToken, Session session) throws IOException, DataAccessException, SQLException {
+        player = playerColor;
         AuthData auth = authData.getAuth(authToken);
         testValues(gameID, authToken, session);
         String username = auth.username();
@@ -92,7 +95,14 @@ public class WebSocketHandler {
             session.getRemote().sendString(new Gson().toJson(error));
             return;
         }
+        GameData updated;
+        if(playerColor == ChessGame.TeamColor.WHITE) {
+            updated = new GameData(d.gameID(), username, d.blackUsername(), d.gameName(), d.game());
+        } else {
+            updated = new GameData(d.gameID(), d.whiteUsername(), username, d.gameName(), d.game());
+        }
         sessions.add(gameID, authToken, session);
+        gameData.updateBoard(updated);
         var message = String.format("%s joined game %d as color %s", username, gameID, playerColor);
         Notification notify = new Notification(message);
         sessions.broadcast(authToken, notify, gameID);
@@ -126,6 +136,11 @@ public class WebSocketHandler {
             playerColor = null;
         }
         ChessGame game = g.game();
+        /*if(playerColor != game.getTurn()) {
+            Error error = new Error("It's not your turn");
+            session.getRemote().sendString(new Gson().toJson(error));
+            return;
+        }*/
         if(game.getGameOver()) {
             Error error = new Error("Game is over, no more moves");
             session.getRemote().sendString(new Gson().toJson(error));
@@ -136,13 +151,15 @@ public class WebSocketHandler {
         ChessPiece pieceMove = preMove.getPiece(move.getStartPosition());
         ChessPiece.PieceType type = pieceMove.getPieceType();
         ChessGame.TeamColor color = pieceMove.getTeamColor();
+        System.out.println("Here " + playerColor + " " + color);
         if(playerColor == null) {
-            Error error = new Error("You can't move pieces as observer");
+            Error error = new Error("You cannot move pieces as observer");
             session.getRemote().sendString(new Gson().toJson(error));
             return;
         }
         if(!String.valueOf(playerColor).equals(String.valueOf(color))) {
-            Error error = new Error("You can't move an opponents piece");
+            System.out.println("Here " + playerColor + " " + color);
+            Error error = new Error("You cannot move an opponents piece");
             session.getRemote().sendString(new Gson().toJson(error));
             return;
         }
@@ -196,10 +213,10 @@ public class WebSocketHandler {
         String username = a.username();
         GameData g = gameData.getGame(gameID);
         GameData updated;
-        if(g.whiteUsername().equals(username)) {
+        if(player == ChessGame.TeamColor.WHITE) {
             System.out.println("Updating list1");
             updated = new GameData(g.gameID(), null, g.blackUsername(), g.gameName(),g.game());
-        } else if(g.blackUsername().equals(username)) {
+        } else if(player == ChessGame.TeamColor.BLACK) {
             System.out.println("Updating list2");
             updated = new GameData(g.gameID(), g.whiteUsername(), null, g.gameName(), g.game());
         } else {

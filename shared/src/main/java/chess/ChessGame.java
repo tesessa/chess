@@ -13,10 +13,11 @@ public class ChessGame {
     private ChessBoard gameBoard = new ChessBoard();
 
     private boolean gameOver = false;
-    private TeamColor turn = TeamColor.WHITE;
+    private TeamColor turn;
 
     public ChessGame() {
         gameBoard.resetBoard();
+        turn = TeamColor.WHITE;
     }
 
     /**
@@ -31,12 +32,8 @@ public class ChessGame {
      *
      * @param team the team whose turn it is
      */
-    public void setTeamTurn(TeamColor team) {
-        if(team == TeamColor.WHITE) {
-            turn = TeamColor.WHITE;
-        } else {
-            turn = TeamColor.BLACK;
-        }
+    public void setTeamTurn(ChessGame.TeamColor team) {
+        turn = team;
     }
 
     public void setGameOverTrue() {
@@ -45,6 +42,10 @@ public class ChessGame {
 
     public boolean getGameOver() {
         return gameOver;
+    }
+
+    public ChessGame.TeamColor getTurn() {
+        return turn;
     }
 
     /**
@@ -122,7 +123,7 @@ public class ChessGame {
         }
         ChessGame.TeamColor color  = getBoard().getPiece(move.getStartPosition()).getTeamColor();
         if(getTeamTurn() != color) {
-            throw new InvalidMoveException("It isn't your turn");
+            throw new InvalidMoveException("You're trying to move the wrong opponent");
         }
         Collection<ChessMove> validMovesList = validMoves(move.getStartPosition());
         if(validMovesList == null) {
@@ -151,11 +152,11 @@ public class ChessGame {
             } else {
                 newBoard.addPiece(move.getEndPosition(), originalPiece);
             }
-            if(originalPiece.getTeamColor() == TeamColor.WHITE) {
+            /*if(originalPiece.getTeamColor() == TeamColor.WHITE) {
                 setTeamTurn(TeamColor.BLACK);
             } else {
                 setTeamTurn(TeamColor.WHITE);
-            }
+            }*/
             newBoard.addPiece(move.getStartPosition(), null);
             setBoard(newBoard);
            if(getTeamTurn() == TeamColor.WHITE) {

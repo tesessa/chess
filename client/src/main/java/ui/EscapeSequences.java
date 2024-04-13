@@ -77,6 +77,7 @@ public class EscapeSequences {
         var out = new PrintStream(System.out, true);
         ChessGame game = new ChessGame();
         ChessBoard board = game.getBoard();
+        board.resetBoard();
         ChessPosition position = new ChessPosition(1,2);
         printLegalMoves(game, position, ChessGame.TeamColor.WHITE);
         int [][] moves = new int[8][8];
@@ -173,10 +174,10 @@ public class EscapeSequences {
     }
 
     public static void drawBoardWhite(PrintStream out, ChessBoard board, String[][] arr, int[][] moves) {
-        String horizontalBoard1[] = {" h ", " g ", " f ", " e ", " d ", " c ", " b ", " a "};
-       // String horizontalBoard1[] = {" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
-        String verticalBoard1[] = {" 8 ", " 7 ", " 6 ", " 5 ", " 4 ", " 3 ", " 2 ", " 1 "};
-       // String verticalBoard1[] = {" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 "};
+       // String horizontalBoard1[] = {" h ", " g ", " f ", " e ", " d ", " c ", " b ", " a "};
+        String horizontalBoard1[] = {" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
+        //String verticalBoard1[] = {" 8 ", " 7 ", " 6 ", " 5 ", " 4 ", " 3 ", " 2 ", " 1 "};
+        String verticalBoard1[] = {" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 "};
         out.print(SET_TEXT_COLOR_BLACK);
         drawBorders(out, horizontalBoard1);
         drawRows(out, verticalBoard1, board, arr, true, moves);
@@ -185,10 +186,10 @@ public class EscapeSequences {
     }
 
     public static void drawBoardBlack(PrintStream out, ChessBoard board, String[][] arr, int[][]moves) {
-       // String horizontalBoard2[] = {" h ", " g ", " f ", " e ", " d ", " c ", " b ", " a "};
-        String horizontalBoard2[] = {" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
-       // String verticalBoard2[] = {" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 "};
-        String verticalBoard2[] = {" 8 ", " 7 ", " 6 ", " 5 ", " 4 ", " 3 ", " 2 ", " 1 "};
+        String horizontalBoard2[] = {" h ", " g ", " f ", " e ", " d ", " c ", " b ", " a "};
+       // String horizontalBoard2[] = {" a ", " b ", " c ", " d ", " e ", " f ", " g ", " h "};
+        String verticalBoard2[] = {" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 "};
+        //String verticalBoard2[] = {" 8 ", " 7 ", " 6 ", " 5 ", " 4 ", " 3 ", " 2 ", " 1 "};
         out.print(SET_TEXT_COLOR_BLACK);
         drawBorders(out, horizontalBoard2);
         drawRows(out, verticalBoard2, board, arr, false, moves);
@@ -229,8 +230,8 @@ public class EscapeSequences {
         for(int squareRow = 0; squareRow < 3; squareRow++) {
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; boardCol++) {
                 String print;
-                if(black) print = arr[row][boardCol];
-                else print = arr[7-row][7-boardCol];
+                if(!black) print = arr[row][7-boardCol];
+                else print = arr[row][boardCol];
                 if(legalMoves[row][boardCol] == 1) {
                     out.print(SET_BG_COLOR_GREEN);
                 } else if(legalMoves[row][boardCol] == 2) {
@@ -239,12 +240,13 @@ public class EscapeSequences {
                 if (boardCol == 0) {
                     out.print(SET_BG_COLOR_LIGHT_GREY);
                     if (squareRow == 1) {
-                      //  out.print(SET_TEXT_COLOR_GREEN);
+                       out.print(SET_TEXT_COLOR_BLACK);
                         out.print(EMPTY.repeat(1));
                         out.print(verticalPos);
                         out.print(EMPTY.repeat(1));
                     } else out.print(EMPTY.repeat(3));
                 }
+              //  out.print(SET_TEXT_COLOR_GREEN);
                 ChessPosition position = new ChessPosition(row+1, boardCol+1);
                 ChessPiece piece = board.getPiece(position);
                 if(piece != null) {
@@ -264,6 +266,11 @@ public class EscapeSequences {
                             out.print(EMPTY.repeat(1));
                         } else out.print(EMPTY.repeat(3));
                     } else {
+                        if(piece != null) {
+                            ChessGame.TeamColor color = piece.getTeamColor();
+                            if(color == ChessGame.TeamColor.WHITE) out.print(SET_TEXT_COLOR_BLUE);
+                            else out.print(SET_TEXT_COLOR_RED);
+                        }
                         backgroundWhite(out);
                         if(black) backgroundBlack(out);
                         if(legalMoves[row][boardCol] == 1) out.print(SET_BG_COLOR_GREEN);
@@ -276,15 +283,20 @@ public class EscapeSequences {
                             out.print(EMPTY.repeat(3));
                         }
                     }
-                    ChessPosition p = new ChessPosition(row+1, boardCol+1);
+                    /*ChessPosition p = new ChessPosition(row+1, boardCol+1);
                     ChessPiece pi = board.getPiece(p);
                     if(pi != null) {
                         ChessGame.TeamColor color = pi.getTeamColor();
                         if(color == ChessGame.TeamColor.WHITE) out.print(SET_TEXT_COLOR_BLUE);
                         else out.print(SET_TEXT_COLOR_RED);
-                    }
+                    }*/
                 } else if(row%2 == 1 ){
                     if (boardCol % 2 == 0) {
+                        if(piece != null) {
+                            ChessGame.TeamColor color = piece.getTeamColor();
+                            if(color == ChessGame.TeamColor.WHITE) out.print(SET_TEXT_COLOR_BLUE);
+                            else out.print(SET_TEXT_COLOR_RED);
+                        }
                         backgroundWhite(out);
                         if(black) backgroundBlack(out);
                         if(legalMoves[row][boardCol] == 1) out.print(SET_BG_COLOR_GREEN);
@@ -295,6 +307,11 @@ public class EscapeSequences {
                             out.print(EMPTY.repeat(1));
                         } else out.print(EMPTY.repeat(3));
                     } else {
+                        if(piece != null) {
+                            ChessGame.TeamColor color = piece.getTeamColor();
+                            if(color == ChessGame.TeamColor.WHITE) out.print(SET_TEXT_COLOR_BLUE);
+                            else out.print(SET_TEXT_COLOR_RED);
+                        }
                         backgroundBlack(out);
                         if(black) backgroundWhite(out);
                         if(legalMoves[row][boardCol] == 1) {
@@ -321,6 +338,11 @@ public class EscapeSequences {
                     } else {
                         out.print(EMPTY.repeat(3));
                     }
+                }
+                if(piece != null) {
+                    ChessGame.TeamColor color = piece.getTeamColor();
+                    if(color == ChessGame.TeamColor.WHITE) out.print(SET_TEXT_COLOR_BLUE);
+                    else out.print(SET_TEXT_COLOR_RED);
                 }
         }
             out.print(SET_BG_COLOR_LIGHT_GREY);

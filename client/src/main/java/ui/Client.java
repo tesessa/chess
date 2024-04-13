@@ -208,15 +208,15 @@ public class Client {
             ChessPosition end = convertInputPosition(endPosition);
             ChessPosition startFinal;
             ChessPosition endFinal;
-            if(playerTeam == ChessGame.TeamColor.BLACK) {
-                 startFinal = new ChessPosition(9 - start.getRow(), start.getColumn());
-                 endFinal = new ChessPosition(9 - end.getRow(), end.getColumn());
+            if(playerTeam == ChessGame.TeamColor.WHITE) {
+                 startFinal = new ChessPosition(9 - start.getRow(), 9-start.getColumn());
+                 endFinal = new ChessPosition(9 - end.getRow(), 9-end.getColumn());
             } else {
-                 startFinal = start;
-                 endFinal = end;
+                 startFinal = new ChessPosition(9-start.getRow(), 9-start.getColumn());
+                 endFinal = new ChessPosition(9-end.getRow(), 9-end.getColumn());
+                 System.out.println(game.getBoard().getPiece(startFinal));
             }
-            System.out.println(game.toString());
-            System.out.println("Team " + playerTeam + " start position " + startPosition + start + " end position " + endPosition + end);
+            System.out.println("Team " + playerTeam + " start position " + startPosition + startFinal + " end position " + endPosition + endFinal);
             ChessMove movePiece = new ChessMove(startFinal, endFinal, null);
             ws.makeMove(gameID, movePiece, authToken);
             ws = new WebSocketFacade(serverUrl, this);
@@ -237,10 +237,10 @@ public class Client {
             String p = params[0].toUpperCase();
             ChessPosition temp = convertInputPosition(p);
             ChessPosition position;
-            if(playerTeam == ChessGame.TeamColor.WHITE) {
+            if(playerTeam == ChessGame.TeamColor.BLACK) {
                 position = new ChessPosition(temp.getRow(), 9-temp.getColumn());
             } else {
-                position = temp;
+                position = new ChessPosition(temp.getRow(), temp.getColumn());
             }
             e.printLegalMoves(game, position, playerTeam);
             return "";
@@ -265,14 +265,14 @@ public class Client {
         else {
             throw new ResponseException(500, "Not a valid column value");
         }
-        if(position.charAt(1) == '1') row = 1;
-        else if(position.charAt(1) == '2') row = 2;
-        else if(position.charAt(1) == '3') row = 3;
-        else if(position.charAt(1) == '4') row = 4;
-        else if(position.charAt(1) == '5') row = 5;
-        else if(position.charAt(1) == '6') row = 6;
-        else if(position.charAt(1) == '7') row = 7;
-        else if(position.charAt(1) == '8') row = 8;
+        if(position.charAt(1) == '1') row = 8;
+        else if(position.charAt(1) == '2') row = 7;
+        else if(position.charAt(1) == '3') row = 6;
+        else if(position.charAt(1) == '4') row = 5;
+        else if(position.charAt(1) == '5') row = 4;
+        else if(position.charAt(1) == '6') row = 3;
+        else if(position.charAt(1) == '7') row = 2;
+        else if(position.charAt(1) == '8') row = 1;
         else {
             throw new ResponseException(500, "Invalid row value");
         }
