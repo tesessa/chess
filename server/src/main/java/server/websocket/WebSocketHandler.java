@@ -175,7 +175,9 @@ public class WebSocketHandler {
         }
         boolean check = game.isInCheck(opposing);
         boolean checkmate = game.isInCheckmate(opposing);
-        if(checkmate) {
+        boolean whiteStaleMate = game.isInStalemate(ChessGame.TeamColor.WHITE);
+        boolean blackStaleMate = game.isInStalemate(ChessGame.TeamColor.BLACK);
+        if(checkmate || whiteStaleMate || blackStaleMate) {
             game.setGameOverTrue();
         }
         GameData updated = new GameData(gameID, g.whiteUsername(), g.blackUsername(), g.gameName(), game);
@@ -198,6 +200,18 @@ public class WebSocketHandler {
         }
         if(checkmate) {
             var message1 = String.format("%s is in checkmate, game is over", a.username());
+            Notification notify1 = new Notification(message1);
+            sessions.broadcast(authToken, notify1, gameID);
+            sessions.sendMessage(gameID, notify1, authToken);
+        }
+        if(blackStaleMate) {
+            var message1 = String.format("%s is in stalemate, game is over", String.valueOf(ChessGame.TeamColor.BLACK));
+            Notification notify1 = new Notification(message1);
+            sessions.broadcast(authToken, notify1, gameID);
+            sessions.sendMessage(gameID, notify1, authToken);
+        }
+        if(whiteStaleMate) {
+            var message1 = String.format("%s is in stalemate, game is over", String.valueOf(ChessGame.TeamColor.WHITE));
             Notification notify1 = new Notification(message1);
             sessions.broadcast(authToken, notify1, gameID);
             sessions.sendMessage(gameID, notify1, authToken);

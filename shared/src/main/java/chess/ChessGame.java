@@ -63,7 +63,7 @@ public class ChessGame {
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
-    public Collection<ChessMove> validMoves(ChessPosition startPosition) throws InvalidMoveException {
+    public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         HashSet<ChessMove> moves = new HashSet<ChessMove>();
         ChessPiece piece = getBoard().getPiece(startPosition);
         TeamColor team = getBoard().getPiece(startPosition).getTeamColor();
@@ -316,30 +316,66 @@ public class ChessGame {
      * @param teamColor which team to check for stalemate
      * @return True if the specified team is in stalemate, otherwise false
      */
-    public boolean isInStalemate(TeamColor teamColor) {
-        boolean staleMate = false;
+    public boolean isInStalemate(TeamColor teamColor)  {
+       /* boolean staleMate = false;
+        ChessGame.TeamColor originalTeam = turn;
         ChessBoard board = getBoard();
         Collection<ChessMove> moves;
-        for(int i = 1; i < 9; i++) {
-            for(int j = 1; j < 9; j++) {
-                ChessPosition boardPosition = new ChessPosition(i,j);
+        ChessBoard copy = new ChessBoard(board);
+        Collection<ChessMove> teamMoves = getTeamMoves(teamColor, findKingPosition(teamColor));
+        if(teamMoves.isEmpty()) {
+            staleMate = true;
+        } else {
+            staleMate = false;
+        }*/
+       /* for(int i = 1; i < 9; i++) {
+           for(int j = 1; j < 9; j++) {
+               ChessPosition boardPosition = new ChessPosition(i,j);
                 if(board.getPiece(boardPosition) != null && board.getPiece(boardPosition).getTeamColor().equals(teamColor)) {
-                    ChessPiece piece = board.getPiece(boardPosition);
-                    moves = piece.pieceMoves(board, boardPosition);
-                    for(ChessMove check : moves) {
+                   ChessPiece piece = board.getPiece(boardPosition);*/
+                  //  moves = teamMoves;
+                   /* for(ChessMove check : teamMoves) {
+                        setBoard(new ChessBoard(copy));
+                        setTeamTurn(teamColor);
+                        System.out.println(getBoard().boardToString());
+                        makeMove(check);
                         if(kingIsUnsafe(teamColor, check.getEndPosition())) {
-                            staleMate = true;
-                        } else {
-                            staleMate = false;
+                            teamMoves.remove(check);
                         }
+                       // this.gameBoard = copy;
                     }
-                    if(moves.isEmpty()) {
+                    if(teamMoves.isEmpty()) {
                         staleMate = true;
+                    }
+               // }
+         //   }
+       // }
+        setTeamTurn(originalTeam);
+        return staleMate;*/
+        HashSet<ChessMove> validMoves = new HashSet<ChessMove>();
+        ChessBoard board  = getBoard();
+        System.out.println(board.boardToString());
+        for(int i = 1; i < 9; i++) {
+            for (int j = 1; j < 9; j++) {
+                ChessPosition boardPosition = new ChessPosition(i, j);
+                ChessPiece pieceInLoop = board.getPiece(boardPosition);
+                if (pieceInLoop != null && pieceInLoop.getTeamColor().equals(teamColor)) {
+                    Collection<ChessMove> moves = validMoves(boardPosition);
+                    for (ChessMove check : moves) {
+                        validMoves.add(check);
                     }
                 }
             }
         }
-        return staleMate;
+       // System.out.println("Size " + validMoves.size());
+       // for(var check : validMoves) {
+          //  System.out.println("Move " + check);
+      //  }
+        if(validMoves.isEmpty()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**

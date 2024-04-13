@@ -1,6 +1,8 @@
 package ui;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Scanner;
 
 import ExceptionClasses.BadRequestException;
 import ExceptionClasses.ResponseException;
@@ -228,6 +230,22 @@ public class Client {
                  endFinal = new ChessPosition(9-end.getRow(), 9-end.getColumn());
                  System.out.println(game.getBoard().getPiece(startFinal));
             }
+            ChessPiece piece = game.getBoard().getPiece(startFinal);
+            ChessPiece promotionPiece;
+            if(piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+                HashSet<ChessMove> pawnMoves = (HashSet<ChessMove>) piece.pieceMoves(game.getBoard(), startFinal);
+                for(var check : pawnMoves) {
+                    if(check.getPromotionPiece() != null) {
+                        if(check.getEndPosition() == endFinal) {
+                            promotionPiece = promotionMove();
+                            break;
+                        }
+                    }
+                }
+            }
+            //if(promotionPiece.getPieceType() != null) {
+
+            //}
            // System.out.println("Team " + playerTeam + " start position " + startPosition + startFinal + " end position " + endPosition + endFinal);
             ChessMove movePiece = new ChessMove(startFinal, endFinal, null);
             ws.makeMove(gameID, movePiece, authToken);
@@ -236,6 +254,25 @@ public class Client {
             return "";
         }
         throw new ResponseException(500, "Expected <start-position> <end-position>");
+    }
+
+    public ChessPiece promotionMove() {
+        System.out.println("You can make pawn into promotion piece, what piece do you want?");
+        System.out.println("Rook (r)\nKnight (n)\nBishop (b)\nQueen (q)\n");
+        System.out.print("\n" + EscapeSequences.ERASE_SCREEN + ">>> " + EscapeSequences.SET_TEXT_COLOR_GREEN);
+        Scanner scanner = new Scanner(System.in);
+        String line = scanner.nextLine().toUpperCase();
+        ChessPiece piece;
+        if(line.equals("R")) {
+            piece = new ChessPiece(playerTeam, ChessPiece.PieceType.ROOK);
+        } else if (line.equals("Q")) {
+            piece = new ChessPiece(playerTeam, ChessPiece.PieceType.QUEEN);
+        } else if(line.equals("N")) {
+            piece = new ChessPiece(playerTeam, ChessPiece.PieceType.KNIGHT);
+        } else {
+            piece = new ChessPiece(playerTeam, ChessPiece.PieceType.BISHOP);
+        }
+        return piece;
     }
 
     public String resign(String... params) throws ResponseException, BadRequestException {

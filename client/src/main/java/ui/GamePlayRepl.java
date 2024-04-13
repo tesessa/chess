@@ -21,7 +21,8 @@ public class GamePlayRepl  {
     public void run() throws ResponseException {
         Scanner scanner = new Scanner(System.in);
         var result = "";
-
+        System.out.println();
+        System.out.println(client.help());
         while(!result.equals("quit")) {
             if(client.getClientStatus() == 1) {
                 PostLoginRepl post = new PostLoginRepl(client);

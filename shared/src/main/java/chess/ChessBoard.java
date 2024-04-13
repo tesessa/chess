@@ -36,6 +36,7 @@ public class ChessBoard {
         addPiece(position3, piece3);*/
     }
 
+
     public ChessBoard(ChessBoard board)
     {
         for(int i=0;i<8;i++)
@@ -140,6 +141,20 @@ public class ChessBoard {
         return "ChessBoard{" + Arrays.deepToString(squares) +
                 '}';
     }
+
+    public String boardToString()
+    {
+        String rval="";
+        for(int x=0;x<8;x++) {
+            for (int y = 0; y < 8; y++) {
+                if(squares[x][y]==null) rval += "|          ";
+                else rval+="|" + squares[x][y].getTeamColor() + squares[x][y].getPieceType();
+            }
+            rval+="|\n";
+        }
+        return rval;
+    }
+
 
     @Override
     public boolean equals(Object o) {

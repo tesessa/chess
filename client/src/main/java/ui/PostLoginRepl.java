@@ -14,6 +14,8 @@ public class PostLoginRepl {
     public void run() throws ResponseException  {
         Scanner scanner = new Scanner(System.in);
         var result = "";
+        System.out.println();
+        System.out.println(client.help());
         while(!result.equals("quit")) {
             if(client.getClientStatus() == 0) {
                 PreLoginRepl preLogin = new PreLoginRepl(client.getServerUrl());
