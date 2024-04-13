@@ -1,5 +1,6 @@
 package ui;
 
+import ExceptionClasses.ResponseException;
 import WebSocket.GameHandler;
 import WebSocket.WebSocketFacade;
 import chess.ChessGame;
@@ -17,12 +18,17 @@ public class GamePlayRepl  {
         this.client = client;
     }
 
-    public void run() {
+    public void run() throws ResponseException {
         Scanner scanner = new Scanner(System.in);
         var result = "";
 
         while(!result.equals("quit")) {
-
+            if(client.getClientStatus() == 1) {
+                PostLoginRepl post = new PostLoginRepl(client);
+                post.run();
+                break;
+            }
+           // client.help();
             printPrompt();
             String line = scanner.nextLine();
             try {

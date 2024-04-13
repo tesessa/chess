@@ -78,7 +78,7 @@ public class EscapeSequences {
         ChessGame game = new ChessGame();
         ChessBoard board = game.getBoard();
         board.resetBoard();
-        ChessPosition position = new ChessPosition(1,2);
+        ChessPosition position = new ChessPosition(3,4);
         printLegalMoves(game, position, ChessGame.TeamColor.WHITE);
         int [][] moves = new int[8][8];
         board.resetBoard();
@@ -136,8 +136,8 @@ public class EscapeSequences {
             //System.out.println("Valid: " + position);
             //System.out.println("Start: " + start);
            // if(team == ChessGame.TeamColor.BLACK) {
-                arr[8-position.getRow()][position.getColumn()-1] = 1;
-                arr[8-start.getRow()][start.getColumn()-1] = 2;
+                arr[position.getRow()-1][9-position.getColumn()-1] = 1;
+                arr[start.getRow()-1][9-start.getColumn()-1] = 2;
             //}
         }
         return arr;
@@ -230,7 +230,7 @@ public class EscapeSequences {
         for(int squareRow = 0; squareRow < 3; squareRow++) {
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; boardCol++) {
                 String print;
-                if(!black) print = arr[row][7-boardCol];
+                if(!black) print = arr[row][8-boardCol-1];
                 else print = arr[row][boardCol];
                 if(legalMoves[row][boardCol] == 1) {
                     out.print(SET_BG_COLOR_GREEN);
@@ -240,19 +240,24 @@ public class EscapeSequences {
                 if (boardCol == 0) {
                     out.print(SET_BG_COLOR_LIGHT_GREY);
                     if (squareRow == 1) {
-                       out.print(SET_TEXT_COLOR_BLACK);
+                        out.print(SET_TEXT_COLOR_BLACK);
                         out.print(EMPTY.repeat(1));
                         out.print(verticalPos);
                         out.print(EMPTY.repeat(1));
                     } else out.print(EMPTY.repeat(3));
                 }
               //  out.print(SET_TEXT_COLOR_GREEN);
-                ChessPosition position = new ChessPosition(row+1, boardCol+1);
+                ChessPosition position;
+                if(black) {
+                    position = new ChessPosition(row + 1, boardCol + 1);
+                } else {
+                    position = new ChessPosition(row+1, 7-boardCol+1);
+                }
                 ChessPiece piece = board.getPiece(position);
                 if(piece != null) {
                     ChessGame.TeamColor color = piece.getTeamColor();
-                    if(color == ChessGame.TeamColor.WHITE) out.print(SET_TEXT_COLOR_BLUE);
-                    else out.print(SET_TEXT_COLOR_RED);
+                    if(color == ChessGame.TeamColor.BLACK) out.print(SET_TEXT_COLOR_RED);
+                    else out.print(SET_TEXT_COLOR_BLUE);
                 }
                 if (row % 2 == 0) {
                     if (boardCol % 2 == 0) {
@@ -268,8 +273,8 @@ public class EscapeSequences {
                     } else {
                         if(piece != null) {
                             ChessGame.TeamColor color = piece.getTeamColor();
-                            if(color == ChessGame.TeamColor.WHITE) out.print(SET_TEXT_COLOR_BLUE);
-                            else out.print(SET_TEXT_COLOR_RED);
+                            if(color == ChessGame.TeamColor.BLACK) out.print(SET_TEXT_COLOR_RED);
+                            else out.print(SET_TEXT_COLOR_BLUE);
                         }
                         backgroundWhite(out);
                         if(black) backgroundBlack(out);
@@ -294,8 +299,8 @@ public class EscapeSequences {
                     if (boardCol % 2 == 0) {
                         if(piece != null) {
                             ChessGame.TeamColor color = piece.getTeamColor();
-                            if(color == ChessGame.TeamColor.WHITE) out.print(SET_TEXT_COLOR_BLUE);
-                            else out.print(SET_TEXT_COLOR_RED);
+                            if(color == ChessGame.TeamColor.BLACK) out.print(SET_TEXT_COLOR_RED);
+                            else out.print(SET_TEXT_COLOR_BLUE);
                         }
                         backgroundWhite(out);
                         if(black) backgroundBlack(out);
@@ -309,8 +314,8 @@ public class EscapeSequences {
                     } else {
                         if(piece != null) {
                             ChessGame.TeamColor color = piece.getTeamColor();
-                            if(color == ChessGame.TeamColor.WHITE) out.print(SET_TEXT_COLOR_BLUE);
-                            else out.print(SET_TEXT_COLOR_RED);
+                            if(color == ChessGame.TeamColor.BLACK) out.print(SET_TEXT_COLOR_RED);
+                            else out.print(SET_TEXT_COLOR_BLUE);
                         }
                         backgroundBlack(out);
                         if(black) backgroundWhite(out);

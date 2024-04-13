@@ -25,7 +25,7 @@ public class ChessBoard {
             }
         }*/
         resetBoard();
-        /*ChessPosition position1 = new ChessPosition(5,7);
+        ChessPosition position1 = new ChessPosition(5,7);
         ChessPosition position2 = new ChessPosition(3, 4);
         ChessPosition position3 = new ChessPosition(4,5);
         ChessPiece piece3 = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
@@ -33,7 +33,7 @@ public class ChessBoard {
         ChessPiece piece2 = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
         addPiece(position1, piece1);
         addPiece(position2, piece2);
-        addPiece(position3, piece3);*/
+        addPiece(position3, piece3);
     }
 
     public ChessBoard(ChessBoard board)

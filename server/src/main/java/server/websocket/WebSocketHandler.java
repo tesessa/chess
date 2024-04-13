@@ -147,18 +147,15 @@ public class WebSocketHandler {
             return;
         }
         ChessBoard preMove = game.getBoard();
-      //  System.out.println(move);
         ChessPiece pieceMove = preMove.getPiece(move.getStartPosition());
         ChessPiece.PieceType type = pieceMove.getPieceType();
         ChessGame.TeamColor color = pieceMove.getTeamColor();
-        System.out.println("Here " + playerColor + " " + color);
         if(playerColor == null) {
             Error error = new Error("You cannot move pieces as observer");
             session.getRemote().sendString(new Gson().toJson(error));
             return;
         }
         if(!String.valueOf(playerColor).equals(String.valueOf(color))) {
-            System.out.println("Here " + playerColor + " " + color);
             Error error = new Error("You cannot move an opponents piece");
             session.getRemote().sendString(new Gson().toJson(error));
             return;
@@ -169,6 +166,11 @@ public class WebSocketHandler {
             Error error = new Error("Invalid move");
             session.getRemote().sendString(new Gson().toJson(error));
             return;
+        }
+        boolean check = game.isInCheck(playerColor);
+        boolean checkmate = game.isInCheckmate(playerColor);
+        if(checkmate) {
+            game.setGameOverTrue();
         }
         GameData updated = new GameData(gameID, g.whiteUsername(), g.blackUsername(), g.gameName(), game);
         gameData.updateBoard(updated);
@@ -182,6 +184,18 @@ public class WebSocketHandler {
                 String.valueOf(color), String.valueOf(start), String.valueOf(end));
         Notification notify = new Notification(message);
         sessions.broadcast(authToken, notify, gameID);
+        if(check) {
+            var message1 = String.format("%s is in check", a.username());
+            Notification notify1 = new Notification(message1);
+            sessions.broadcast(authToken, notify1, gameID);
+            sessions.sendMessage(gameID, notify1, authToken);
+        }
+        if(checkmate) {
+            var message1 = String.format("%s is in checkmate, game is over", a.username());
+            Notification notify1 = new Notification(message1);
+            sessions.broadcast(authToken, notify1, gameID);
+            sessions.sendMessage(gameID, notify1, authToken);
+        }
     }
 
     private void resign(int gameID, String authToken, Session session) throws DataAccessException, SQLException, IOException {
@@ -213,12 +227,12 @@ public class WebSocketHandler {
         String username = a.username();
         GameData g = gameData.getGame(gameID);
         GameData updated;
-        if(player == ChessGame.TeamColor.WHITE) {
-            System.out.println("Updating list1");
-            updated = new GameData(g.gameID(), null, g.blackUsername(), g.gameName(),g.game());
-        } else if(player == ChessGame.TeamColor.BLACK) {
-            System.out.println("Updating list2");
-            updated = new GameData(g.gameID(), g.whiteUsername(), null, g.gameName(), g.game());
+        if(g.whiteUsername().equals(username)) {
+           // System.out.println("Updating list1");
+            updated = new GameData(g.gameID(), "No user", g.blackUsername(), g.gameName(),g.game());
+        } else if(g.blackUsername().equals(username)) {
+           // System.out.println("Updating list2");
+            updated = new GameData(g.gameID(), g.whiteUsername(), "No user", g.gameName(), g.game());
         } else {
             updated = g;
         }

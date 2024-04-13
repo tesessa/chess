@@ -169,7 +169,13 @@ public class Client {
         throw new ResponseException(400, "Expected <gameID>");
     }
 
-    public String logout() throws UnauthorizedException, IOException {
+    public String logout() throws UnauthorizedException, IOException, BadRequestException {
+        if(clientStatus == 0) {
+            throw new BadRequestException("You can't log out, you aren't logged in");
+        }
+        if(clientStatus == 2) {
+            throw new BadRequestException("You have to leave game to logout");
+        }
         assertSignedIn();
         server.logout(authToken);
         String result = String.format("You logged out as %s", username);
@@ -192,7 +198,10 @@ public class Client {
         return "";
     }
 
-    public String leave() throws ResponseException {
+    public String leave() throws ResponseException, BadRequestException {
+        if(clientStatus != 2) {
+            throw new BadRequestException("You have to be in a game to leave");
+        }
         setClientStatus(1);
         ws.leave(authToken, gameID);
         //ws = null;
@@ -200,7 +209,10 @@ public class Client {
         return result;
     }
 
-    public String move(String... params) throws ResponseException {
+    public String move(String... params) throws ResponseException, BadRequestException {
+        if(clientStatus != 2) {
+            throw new BadRequestException("You can't make a move when not in a game");
+        }
         if(params.length == 2) {
             String startPosition = params[0].toUpperCase();
             String endPosition = params[1].toUpperCase();
@@ -226,13 +238,19 @@ public class Client {
         throw new ResponseException(500, "Expected <start-position> <end-position>");
     }
 
-    public String resign(String... params) throws ResponseException {
+    public String resign(String... params) throws ResponseException, BadRequestException {
+        if(clientStatus != 2) {
+            throw new BadRequestException("You can't resign if you're not in a game");
+        }
         ws.resign(gameID, authToken);
         String result = String.format("You resigned game %d as %s", gameID, username);
         return result;
     }
 
-    public String legal(String... params) throws ResponseException, InvalidMoveException {
+    public String legal(String... params) throws ResponseException, InvalidMoveException, BadRequestException {
+        if(clientStatus != 2) {
+            throw new BadRequestException("You can't show legal moves if you're not in a game");
+        }
         if(params.length == 1) {
             String p = params[0].toUpperCase();
             ChessPosition temp = convertInputPosition(p);
@@ -343,7 +361,7 @@ public class Client {
 
     public void printMessage(String message, ServerMessage s) {
         if(s.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION || s.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
-            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + message);
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + s.toString());
         }
         if(s.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
 
