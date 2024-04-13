@@ -115,7 +115,13 @@ public class EscapeSequences {
 
 
     public static void printLegalMoves(ChessGame game, ChessPosition position, ChessGame.TeamColor team) throws InvalidMoveException {
-        HashSet<ChessMove> moves = (HashSet<ChessMove>) game.validMoves(position);
+        ChessPosition newPosition;
+        if(team == ChessGame.TeamColor.BLACK) {
+            newPosition = new ChessPosition(position.getRow(), 9- position.getColumn());
+        } else {
+            newPosition = position;
+        }
+        HashSet<ChessMove> moves = (HashSet<ChessMove>) game.validMoves(newPosition);
         int arr [][] = convertLegalMoves(moves, team);
         if(team == ChessGame.TeamColor.WHITE) {
             printWhiteBoard(game.getBoard(), arr);
@@ -135,10 +141,13 @@ public class EscapeSequences {
             System.out.println("End " + position);
             //System.out.println("Valid: " + position);
             //System.out.println("Start: " + start);
-           // if(team == ChessGame.TeamColor.BLACK) {
+            if(team == ChessGame.TeamColor.BLACK) {
+                arr[position.getRow()-1][position.getColumn()-1] = 1;
+                arr[start.getRow()-1][start.getColumn()-1] = 2;
+            } else {
                 arr[position.getRow()-1][9-position.getColumn()-1] = 1;
                 arr[start.getRow()-1][9-start.getColumn()-1] = 2;
-            //}
+            }
         }
         return arr;
     }
@@ -230,11 +239,18 @@ public class EscapeSequences {
         for(int squareRow = 0; squareRow < 3; squareRow++) {
             for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; boardCol++) {
                 String print;
-                if(!black) print = arr[row][8-boardCol-1];
-                else print = arr[row][boardCol];
-                if(legalMoves[row][boardCol] == 1) {
+                int legal;
+                if(!black) {
+                    print = arr[row][8-boardCol-1];
+                    legal = legalMoves[row][boardCol];
+                }
+                else {
+                    print = arr[row][boardCol];
+                    legal = legalMoves[row][boardCol];
+                }
+                if(legal == 1) {
                     out.print(SET_BG_COLOR_GREEN);
-                } else if(legalMoves[row][boardCol] == 2) {
+                } else if(legal == 2) {
                     out.print(SET_BG_COLOR_YELLOW);
                 }
                 if (boardCol == 0) {
@@ -263,8 +279,8 @@ public class EscapeSequences {
                     if (boardCol % 2 == 0) {
                         backgroundBlack(out);
                         if(black) backgroundWhite(out);
-                        if(legalMoves[row][boardCol] == 1) out.print(SET_BG_COLOR_GREEN);
-                        else if(legalMoves[row][boardCol] == 2) out.print(SET_BG_COLOR_YELLOW);
+                        if(legal == 1) out.print(SET_BG_COLOR_GREEN);
+                        else if(legal == 2) out.print(SET_BG_COLOR_YELLOW);
                         if(squareRow == 1) {
                             out.print(EMPTY.repeat(1));
                             out.print(print);
@@ -278,8 +294,8 @@ public class EscapeSequences {
                         }
                         backgroundWhite(out);
                         if(black) backgroundBlack(out);
-                        if(legalMoves[row][boardCol] == 1) out.print(SET_BG_COLOR_GREEN);
-                        else if(legalMoves[row][boardCol] == 2) out.print(SET_BG_COLOR_YELLOW);
+                        if(legal == 1) out.print(SET_BG_COLOR_GREEN);
+                        else if(legal == 2) out.print(SET_BG_COLOR_YELLOW);
                         if(squareRow == 1) {
                             out.print(EMPTY.repeat(1));
                             out.print(print);
@@ -304,8 +320,8 @@ public class EscapeSequences {
                         }
                         backgroundWhite(out);
                         if(black) backgroundBlack(out);
-                        if(legalMoves[row][boardCol] == 1) out.print(SET_BG_COLOR_GREEN);
-                        else if(legalMoves[row][boardCol] == 2) out.print(SET_BG_COLOR_YELLOW);
+                        if(legal == 1) out.print(SET_BG_COLOR_GREEN);
+                        else if(legal == 2) out.print(SET_BG_COLOR_YELLOW);
                         if(squareRow == 1) {
                             out.print(EMPTY.repeat(1));
                             out.print(print);
@@ -319,9 +335,9 @@ public class EscapeSequences {
                         }
                         backgroundBlack(out);
                         if(black) backgroundWhite(out);
-                        if(legalMoves[row][boardCol] == 1) {
+                        if(legal == 1) {
                             out.print(SET_BG_COLOR_GREEN);
-                        } else if(legalMoves[row][boardCol] == 2) {
+                        } else if(legal == 2) {
                             out.print(SET_BG_COLOR_YELLOW);
                         }
                         if(squareRow == 1) {

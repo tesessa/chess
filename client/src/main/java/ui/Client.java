@@ -228,7 +228,7 @@ public class Client {
                  endFinal = new ChessPosition(9-end.getRow(), 9-end.getColumn());
                  System.out.println(game.getBoard().getPiece(startFinal));
             }
-            System.out.println("Team " + playerTeam + " start position " + startPosition + startFinal + " end position " + endPosition + endFinal);
+           // System.out.println("Team " + playerTeam + " start position " + startPosition + startFinal + " end position " + endPosition + endFinal);
             ChessMove movePiece = new ChessMove(startFinal, endFinal, null);
             ws.makeMove(gameID, movePiece, authToken);
             ws = new WebSocketFacade(serverUrl, this);
@@ -253,7 +253,7 @@ public class Client {
         }
         if(params.length == 1) {
             String p = params[0].toUpperCase();
-            ChessPosition temp = convertInputPosition(p);
+            ChessPosition temp = convertInputPositionLegal(p);
             ChessPosition position;
             if(playerTeam == ChessGame.TeamColor.BLACK) {
                 position = new ChessPosition(temp.getRow(), 9-temp.getColumn());
@@ -264,6 +264,38 @@ public class Client {
             return "";
         }
         throw new ResponseException(500, "Expected <POSITION>");
+    }
+
+    private ChessPosition convertInputPositionLegal(String position) throws ResponseException {
+        int row;
+        int col;
+        if(position.length() != 2) {
+            throw new ResponseException(500, "You need to input column and row");
+        }
+        if(position.charAt(0) == 'A') col = 8; //8
+        else if(position.charAt(0) == 'B') col = 7; //7
+        else if(position.charAt(0) == 'C') col = 6; //6
+        else if(position.charAt(0) == 'D') col = 5; //5
+        else if(position.charAt(0) == 'E') col = 4; //4
+        else if(position.charAt(0) == 'F') col = 3; //3
+        else if(position.charAt(0) == 'G') col = 2; //2
+        else if(position.charAt(0) == 'H') col = 1; //1
+        else {
+            throw new ResponseException(500, "Not a valid column value");
+        }
+        if(position.charAt(1) == '1') row = 1;
+        else if(position.charAt(1) == '2') row = 2;
+        else if(position.charAt(1) == '3') row = 3;
+        else if(position.charAt(1) == '4') row = 4;
+        else if(position.charAt(1) == '5') row = 5;
+        else if(position.charAt(1) == '6') row = 6;
+        else if(position.charAt(1) == '7') row = 7;
+        else if(position.charAt(1) == '8') row = 8;
+        else {
+            throw new ResponseException(500, "Invalid row value");
+        }
+        ChessPosition chessPosition = new ChessPosition(row, col);
+        return chessPosition;
     }
 
     private ChessPosition convertInputPosition(String position) throws ResponseException {
@@ -294,12 +326,6 @@ public class Client {
         else {
             throw new ResponseException(500, "Invalid row value");
         }
-        /*ChessPosition chessPosition;
-        if(playerTeam == ChessGame.TeamColor.WHITE) {
-            chessPosition = new ChessPosition(row, col);
-        } else {
-            chessPosition = new ChessPosition(row, col);
-        }*/
         ChessPosition chessPosition = new ChessPosition(row, col);
         return chessPosition;
     }
@@ -353,21 +379,23 @@ public class Client {
     }
 
     public void updateGame(ChessGame newGame) {
-        System.out.println("Hey");
+        //System.out.println("Hey");
         game = newGame;
         redraw();
 
     }
 
     public void printMessage(String message, ServerMessage s) {
-        if(s.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION || s.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
-            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + s.toString());
+        if(s.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION ||
+           s.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + message);
         }
-        if(s.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
-
+        if(s.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
+            //System.out.println();
         }
         System.out.println(EscapeSequences.SET_TEXT_COLOR_GREEN);
     }
+
 
 
     //register

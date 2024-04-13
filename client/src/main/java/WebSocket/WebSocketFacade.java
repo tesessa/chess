@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import ui.Client;
 import ui.EscapeSequences;
 import webSocketMessages.serverMessages.LoadGame;
+import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
 //import org.eclipse.jetty.websocket.api.*;
@@ -38,15 +39,18 @@ public class WebSocketFacade extends Endpoint {
                //message from server
                 @Override
                 public void onMessage(String message) {
-                    System.out.println(message);
+                  //  System.out.println(message);
                     ServerMessage s = new Gson().fromJson(message, ServerMessage.class);
-                    client.printMessage(message, s);
+                    //client.printMessage(message, s);
                     if(s.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
                         LoadGame l = new Gson().fromJson(message, LoadGame.class);
-                      //  EscapeSequences es = new EscapeSequences();
-                       // int [][] moves = new int[8][8];
-                      //  es.printWhiteBoard(l.getGame().getBoard(), moves);
                         client.updateGame(l.getGame());
+                    } else if(s.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
+                        Notification n = new Gson().fromJson(message, Notification.class);
+                        client.printMessage(n.toString(), n);
+                    } else if(s.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
+                        //Error e = new Gson().fromJson(message, Error.class);
+                        client.printMessage(message,s);
                     }
                 }
             });

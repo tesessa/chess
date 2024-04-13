@@ -76,8 +76,8 @@ public class WebSocketHandler {
         testValues(gameID, authToken, session);
         String username = auth.username();
         GameData d = gameData.getGame(gameID);
-        System.out.println("Original username " + username + " gameData White Username "
-                 + d.whiteUsername() + " gameData black username " + d.blackUsername());
+      //  System.out.println("Original username " + username + " gameData White Username "
+         //        + d.whiteUsername() + " gameData black username " + d.blackUsername());
         if(d.game() == null) {
             System.out.println("true");
         }
@@ -136,11 +136,11 @@ public class WebSocketHandler {
             playerColor = null;
         }
         ChessGame game = g.game();
-        /*if(playerColor != game.getTurn()) {
+        if(playerColor != game.getTurn()) {
             Error error = new Error("It's not your turn");
             session.getRemote().sendString(new Gson().toJson(error));
             return;
-        }*/
+        }
         if(game.getGameOver()) {
             Error error = new Error("Game is over, no more moves");
             session.getRemote().sendString(new Gson().toJson(error));
@@ -167,8 +167,14 @@ public class WebSocketHandler {
             session.getRemote().sendString(new Gson().toJson(error));
             return;
         }
-        boolean check = game.isInCheck(playerColor);
-        boolean checkmate = game.isInCheckmate(playerColor);
+        ChessGame.TeamColor opposing;
+        if(playerColor == ChessGame.TeamColor.WHITE) {
+            opposing = ChessGame.TeamColor.BLACK;
+        } else {
+            opposing = ChessGame.TeamColor.WHITE;
+        }
+        boolean check = game.isInCheck(opposing);
+        boolean checkmate = game.isInCheckmate(opposing);
         if(checkmate) {
             game.setGameOverTrue();
         }

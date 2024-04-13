@@ -73,7 +73,7 @@ public class ChessGame {
             setTeamTurn(team);
         }
       // if(getTeamTurn() != team) {
-        //    throw new InvalidMoveException("It isn't your turn");
+      //      throw new InvalidMoveException("It isn't your turn");
        //}
         if(getBoard().getPiece(startPosition) == null) {
             return null;
@@ -157,6 +157,7 @@ public class ChessGame {
             } else {
                 setTeamTurn(TeamColor.WHITE);
             }*/
+
             newBoard.addPiece(move.getStartPosition(), null);
             setBoard(newBoard);
            if(getTeamTurn() == TeamColor.WHITE) {
